@@ -12,5 +12,5 @@ const routers = {
   Person,
 };
 
-const Routers = StackNavigator(routers);
-export default createAppContainer(Routers);
+const Routers = createAppContainer(StackNavigator(routers, "Login", "SlideFromRightIOS"));
+export default Routers;
