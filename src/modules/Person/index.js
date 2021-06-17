@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from "react";
-import HeaderTitle from "../../components/Title/index";
+import Title from "../../components/Title/index";
 import {
   ScrollView,
   StyleSheet,
@@ -27,7 +27,7 @@ const Person = (props) => {
   }, []);
   return (
     <View style={{ height: Dimensions.get("window").height }}>
-      <HeaderTitle
+      <Title
         title="隐私政策"
         onLeftPress={onBackPress}
         titleLeft={<Image style={{ width: 12, height: 18 }} source={require("../../assets/images/icon/back.png")}/>}

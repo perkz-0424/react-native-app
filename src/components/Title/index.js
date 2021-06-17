@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import isBangsScreen from "../../assets/js/iPhone";
 
-const HeaderTitle = (props) => {
+const Title = (props) => {
   const onPress = () => {
     props.onLeftPress && props.onLeftPress();
   };
@@ -44,4 +44,4 @@ const HeaderTitle = (props) => {
   );
 };
 
-export default HeaderTitle;
+export default Title;
