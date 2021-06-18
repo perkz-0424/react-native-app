@@ -16,7 +16,7 @@ import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 
 const LoginPage = props => {
-  const [userName, set_userName] = useState(props.username);
+  const [userName, set_userName] = useState("");
   const [secure, set_secure] = useState(true);
   const [appType, set_appType] = useState("省电信");
   const [imageAddress, set_imageAddress] = useState("");
@@ -124,13 +124,13 @@ const LoginPage = props => {
               placeholder="请输入手机或邮箱验证码"
               clear
               autoCapitalize="none"
-              keyboardType="default"
+              keyboardType="numeric"
             />
           </View>
           <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {}}>
             <View style={{ justifyContent: "center", marginRight: 5 }}>
               <View style={styles.line}>
-                <Text style={{ fontSize: 10, color: "#1D9AFF" }}>{codeTitle}</Text>
+                <Text style={{ fontSize: 11, color: "#1D9AFF" }}>{codeTitle}</Text>
               </View>
             </View>
           </TouchableOpacity>

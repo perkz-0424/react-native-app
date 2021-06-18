@@ -15,7 +15,7 @@ const defaultStyle = {
   fill_tap: "#dddddd",                            // 组件默认背景 _ 按下
   fill_disabled: "#dddddd",                       // 通用失效背景
   fill_mask: "rgba(0, 0, 0, .4)",              // 遮罩背景
-  color_icon_base: "#cccccc",                     // 许多小图标的背景，比如一些小圆点，加减号
+  color_icon_base: "#9c9c9c",                     // 许多小图标的背景，比如一些小圆点，加减号
   fill_grey: "#f7f7f7",
 
   // 透明度
@@ -31,7 +31,7 @@ const defaultStyle = {
   brand_wait: "#108ee9",
 
   // 边框色
-  border_color_base: "#dddddd",
+  border_color_base: "rgba(0,0,0,0)",
 
   // 字体尺寸
   // ---
@@ -40,7 +40,7 @@ const defaultStyle = {
   font_size_base: 14,
   font_size_subhead: 15,
   font_size_caption: 16,
-  font_size_heading: 17,
+  font_size_heading: 13,
 
   // 圆角
   // ---
@@ -163,7 +163,7 @@ const defaultStyle = {
   tag_small_height: 15,
 
   // picker
-  option_height: 42,            // picker 标题的高度
+  option_height: 45,            // picker 标题的高度
 
   toast_zindex: 1999,
   action_sheet_zindex: 1000,

@@ -16,11 +16,10 @@ const routers = {
   /**从下往上弹出路由**/
   stackBottomRouters: {
     ForgetPwd,
-  },
-  /**从右往左弹出路由**/
-  stackRightRouters: {
     Person,
   },
+  /**从右往左弹出路由**/
+  stackRightRouters: {},
   /**默认路由**/
   defaultRouters: {}
 };
