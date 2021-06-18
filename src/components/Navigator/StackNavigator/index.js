@@ -41,7 +41,7 @@ const StackNavigator = (routers, initialRouteName, type) => {
       initialRouteName,
       defaultNavigationOptions: {
         ...options.direction,
-      }
+      },
     }
   );
 };

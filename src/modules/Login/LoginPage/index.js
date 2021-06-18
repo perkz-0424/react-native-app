@@ -35,6 +35,9 @@ const LoginPage = props => {
   const showPerson = () => {
     props.navigation.navigate("Person");
   };
+  const showForgetPwd = () => {
+    props.navigation.navigate("ForgetPwd");
+  }
   useMemo(() => {
     getImageCode();
   }, []);
@@ -127,7 +130,7 @@ const LoginPage = props => {
           <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {}}>
             <View style={{ justifyContent: "center", marginRight: 5 }}>
               <View style={styles.line}>
-                <Text style={{ fontSize: 12 }}>{codeTitle}</Text>
+                <Text style={{ fontSize: 10, color: "#1D9AFF" }}>{codeTitle}</Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -136,7 +139,7 @@ const LoginPage = props => {
           <Button onPress={() => {}}>登录</Button>
         </View>
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={showForgetPwd}>
             <Text style={styles.text}>忘记密码</Text>
           </TouchableOpacity>
         </View>

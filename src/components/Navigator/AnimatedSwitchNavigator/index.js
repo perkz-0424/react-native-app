@@ -11,13 +11,13 @@ const Transitions = () => {
     </Transition.Together>
   );
 };
-const AnimateSwitchNavigator = (routers) => {
+const AnimateSwitchNavigator = (routers, initialRouteName) => {
   return createAnimatedSwitchNavigator(
     {
       ...routers,
     }, {
       transition: <Transitions/>,
-      initialRouteName: "Login",
+      initialRouteName,
       backBehavior: "history",
     },
   );
