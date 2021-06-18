@@ -10,7 +10,7 @@ const Title = (props) => {
     <View style={{
       backgroundColor: "#f3f3f3",
       borderBottomWidth: 0.2,
-      borderColor: "#9c9c9c",
+      borderColor: "rgba(156,156,156,0.5)",
     }}>
       <View style={{ height: isBangsScreen() ? 35 : 0 }}/>
       <View style={{

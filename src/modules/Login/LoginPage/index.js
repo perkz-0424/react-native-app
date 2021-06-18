@@ -136,7 +136,7 @@ const LoginPage = props => {
           </TouchableOpacity>
         </View>
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
-          <Button onPress={() => {}}>登录</Button>
+          <Button onPress={() => {props.navigation.navigate("NewDonghuanH5")}}>登录</Button>
         </View>
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
           <TouchableOpacity onPress={showForgetPwd}>
