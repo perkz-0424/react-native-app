@@ -1,18 +1,26 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Platform } from "react-native";
 import isBangsScreen from "../../assets/js/iPhone";
 
 const Title = (props) => {
   const onPress = () => {
     props.onLeftPress && props.onLeftPress();
   };
+  let height = 0;
+  if (Platform.OS === "ios") {
+    if (isBangsScreen()) {
+      height = 35; //是刘海屏
+    } else {
+      height = 20;
+    }
+  }
   return (
     <View style={{
       backgroundColor: "#f3f3f3",
       borderBottomWidth: 0.2,
       borderColor: "rgba(156,156,156,0.5)",
     }}>
-      <View style={{ height: isBangsScreen() ? 35 : 0 }}/>
+      <View style={{ height }}/>
       <View style={{
         width: "100%",
         height: 35,

@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
   },
   iconImage: {
-    height: 86,
-    width: 86,
-    borderRadius: 15,
+    height: Dimensions.get("window").width / 5.5,
+    width: Dimensions.get("window").width / 5.5,
+    borderRadius: Dimensions.get("window").width / 30,
   },
   title: {
     marginTop: 20,
