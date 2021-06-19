@@ -1,15 +1,9 @@
 import React, { useState, useMemo } from "react";
 import {
-  View,
-  Alert,
-  StyleSheet,
-  Dimensions,
-  Image,
-  Platform,
-  TextInput,
-  Text,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
+  View, Alert, StyleSheet, Dimensions,
+  Image, Platform, TextInput,
+  Text, TouchableWithoutFeedback, TouchableOpacity,
+  Keyboard
 } from "react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
@@ -17,11 +11,13 @@ import Button from "../../../components/Button/index";
 
 const LoginPage = props => {
   const [userName, set_userName] = useState("");
+  const [password, set_password] = useState("");
+  const [imageCode, set_imageCode] = useState("");
+  const [phoneOrMailCode, set_phoneOrMailCode] = useState("");
   const [secure, set_secure] = useState(true);
-  const [appType, set_appType] = useState("省电信");
-  const [imageAddress, set_imageAddress] = useState("");
-  const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,123");//图形验证码的图
+  const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,111");//图形验证码的图
   const [code, set_code] = useState("");//图形验证码的值
+  const [codeKey, set_codeKey] = useState("");
   const [codeTitle, set_codeTitle] = useState("获取验证码");
   const [times, set_times] = useState(60);
   /*获取图形验证码*/
@@ -29,15 +25,50 @@ const LoginPage = props => {
     api.getVerificationCode().then(res => {
       set_imageSource(`data:image/jpeg;base64,${res.img}`);
       set_code(res.key);
+      set_codeKey(`${res.key}00000000000000000000000000000000`);
     });
   };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
     props.navigation.navigate("Person");
   };
+  /*跳转到忘记密码*/
   const showForgetPwd = () => {
     props.navigation.navigate("ForgetPwd");
-  }
+  };
+  const userNameChange = text => {
+    set_userName(text);
+  };
+  const passwordChange = text => {
+    set_password(text);
+  };
+  const imageCodeChange = text => {
+    set_imageCode(text);
+  };
+  const phoneOrMailCodeChange = text => {
+    set_phoneOrMailCode(text);
+  };
+  /*发送验证码*/
+  const sendVerification = () => {
+    // console.log(Buffer, crypto);
+    if (!userName || !password || !imageCode) {
+      return Alert.alert("警告", "请输入登录名、密码和图形验证码", [{ text: "确定" }]);
+    } else {
+      const { imagePwd, imageIv } = config;
+      // const decipher = crypto.createDecipheriv("aes-128-cbc", imagePwd, imageIv);
+      // decipher.setAutoPadding(false);
+      // let dec = decipher.update(codeKey, "hex", "utf8");
+      // dec += decipher.final("utf8");
+      // const dict = dec.split("");
+      // const correct = dict[0] + dict[1] + dict[2] + dict[3];
+    }
+    Keyboard.dismiss();
+  };
+  /*登录*/
+  const onLogin = () => {
+
+  };
+
   useMemo(() => {
     getImageCode();
   }, []);
@@ -60,6 +91,7 @@ const LoginPage = props => {
               />
             </View>
             <TextInput
+              onChangeText={userNameChange}
               style={styles.inputText}
               placeholder="输入你的登录名"
               clear
@@ -78,12 +110,14 @@ const LoginPage = props => {
               />
             </View>
             <TextInput
+              onChangeText={passwordChange}
               style={styles.inputText}
               placeholder="输入你的密码"
               clear
               autoCapitalize="none"
               secureTextEntry={secure}
               keyboardType="default"
+              value={password}
             />
           </View>
           <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {set_secure(!secure);}}>
@@ -101,11 +135,13 @@ const LoginPage = props => {
         <View style={styles.inputBox}>
           <View style={styles.inputContainer}>
             <TextInput
+              onChangeText={imageCodeChange}
               style={styles.inputText}
               placeholder="请输入验证码"
               clear
               autoCapitalize="none"
               keyboardType="default"
+              value={imageCode}
             />
           </View>
           <TouchableWithoutFeedback style={{ justifyContent: "center" }} onPress={getImageCode}>
@@ -120,14 +156,17 @@ const LoginPage = props => {
         <View style={styles.inputBox}>
           <View style={styles.inputContainer}>
             <TextInput
+              maxLength={6}
+              onChangeText={phoneOrMailCodeChange}
               style={styles.inputText}
-              placeholder="请输入手机或邮箱验证码"
+              placeholder="请输入电信手机或邮箱验证码"
               clear
               autoCapitalize="none"
               keyboardType="numeric"
+              value={phoneOrMailCode}
             />
           </View>
-          <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {}}>
+          <TouchableOpacity style={{ justifyContent: "center" }} onPress={sendVerification}>
             <View style={{ justifyContent: "center", marginRight: 5 }}>
               <View style={styles.line}>
                 <Text style={{ fontSize: 11, color: "#1D9AFF" }}>{codeTitle}</Text>
@@ -136,7 +175,7 @@ const LoginPage = props => {
           </TouchableOpacity>
         </View>
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
-          <Button onPress={() => {props.navigation.navigate("NewDonghuanH5")}}>登录</Button>
+          <Button onPress={onLogin}>登录</Button>
         </View>
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
           <TouchableOpacity onPress={showForgetPwd}>

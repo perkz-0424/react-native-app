@@ -1,14 +1,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import {
-  View,
-  Dimensions,
-  Image,
-  TextInput,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  BackHandler,
+  View, Dimensions, Image, TextInput,
+  TouchableWithoutFeedback, TouchableOpacity,
+  Text, StyleSheet, BackHandler,
 } from "react-native";
 import { Button } from "@ant-design/react-native";
 import Title from "../../components/Title";
@@ -83,7 +77,7 @@ const ForgetPwd = props => {
           <View style={styles.inputContainer}>
             <View style={styles.inputTitle}>
               <Image
-                style={{ width: 14, height: 18 }}
+                style={{ width: 16, height: 19 }}
                 source={require("../../assets/images/SDH/code.png")}
               />
             </View>
@@ -109,7 +103,7 @@ const ForgetPwd = props => {
           <View style={styles.inputContainer}>
             <View style={styles.inputTitle}>
               <Image
-                style={{ width: 14, height: 18 }}
+                style={{ width: 16, height: 19 }}
                 source={require("../../assets/images/SDH/code.png")}
               />
             </View>
@@ -153,7 +147,7 @@ const ForgetPwd = props => {
           <View style={styles.inputContainer}>
             <View style={styles.inputTitle}>
               <Image
-                style={{ width: 15, height: 12 }}
+                style={{ width: 17, height: 14 }}
                 source={require("../../assets/images/SDH/id.png")}
               />
             </View>
@@ -173,7 +167,7 @@ const ForgetPwd = props => {
           <View style={styles.inputContainer}>
             <View style={styles.inputTitle}>
               <Image
-                style={{ width: 15, height: 12 }}
+                style={{ width: 18, height: 14 }}
                 source={require("../../assets/images/SDH/mailIcon.png")}
               />
             </View>
@@ -193,7 +187,7 @@ const ForgetPwd = props => {
           <View style={styles.inputContainer}>
             <View style={styles.inputTitle}>
               <Image
-                style={{ width: 13, height: 15 }}
+                style={{ width: 15.5, height: 18, marginLeft: 1 }}
                 source={require("../../assets/images/SDH/password.png")}
               />
             </View>
