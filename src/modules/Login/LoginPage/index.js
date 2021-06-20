@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from "react";
 import {
   View, Alert, StyleSheet, Dimensions,
-  Image, Platform, TextInput,
-  Text, TouchableWithoutFeedback, TouchableOpacity,
-  Keyboard
+  Image, Platform, TextInput, Text, Keyboard,
+  TouchableWithoutFeedback, TouchableOpacity,
 } from "react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
@@ -48,27 +47,51 @@ const LoginPage = props => {
   const phoneOrMailCodeChange = text => {
     set_phoneOrMailCode(text);
   };
+  /*判断图形验证码是否正确*/
+  const isTrueImageCode = () => {
+    const { imagePwd, imageIv } = config;
+    // const decipher = crypto.createDecipheriv("aes-128-cbc", imagePwd, imageIv);
+    // decipher.setAutoPadding(false);
+    // let dec = decipher.update(codeKey, "hex", "utf8");
+    // dec += decipher.final("utf8");
+    // const dict = dec.split("");
+    // const correct = dict[0] + dict[1] + dict[2] + dict[3];
+    return true;
+  };
+  /*弹出错误警告*/
+  const alertError = (message) => {
+    return Alert.alert("警告", message, [{ text: "确定" }]);
+  };
+  /*是否可以掉接口*/
+  const ready = (condition, message, callback) => {
+    if (condition) {
+      return alertError(message);
+    } else {
+      if (isTrueImageCode()) {
+        callback();
+      } else {
+        return alertError("图形验证码错误");
+      }
+    }
+  };
   /*发送验证码*/
   const sendVerification = () => {
-    // console.log(Buffer, crypto);
-    if (!userName || !password || !imageCode) {
-      return Alert.alert("警告", "请输入登录名、密码和图形验证码", [{ text: "确定" }]);
-    } else {
-      const { imagePwd, imageIv } = config;
-      // const decipher = crypto.createDecipheriv("aes-128-cbc", imagePwd, imageIv);
-      // decipher.setAutoPadding(false);
-      // let dec = decipher.update(codeKey, "hex", "utf8");
-      // dec += decipher.final("utf8");
-      // const dict = dec.split("");
-      // const correct = dict[0] + dict[1] + dict[2] + dict[3];
-    }
+    ready(!userName || !password || !imageCode,
+      "请输入登录名、密码和图形验证码",
+      () => {
+        console.log("发送验证码");
+      });
     Keyboard.dismiss();
   };
   /*登录*/
   const onLogin = () => {
-
+    ready(!userName || !password || !imageCode || !phoneOrMailCode,
+      "请输入登录名、密码、图形验证码和手机或邮箱验证码",
+      () => {
+        console.log("登录");
+      });
   };
-
+  
   useMemo(() => {
     getImageCode();
   }, []);
