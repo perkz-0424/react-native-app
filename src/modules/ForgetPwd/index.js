@@ -119,7 +119,7 @@ const ForgetPwd = props => {
           <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {}}>
             <View style={{ justifyContent: "center", marginRight: 5 }}>
               <View style={styles.line}>
-                <Text style={{ fontSize: 11, color: "#1D9AFF" }}>{codeTitle}</Text>
+                <Text style={{ fontSize: 10, color: "#1D9AFF" }}>{codeTitle}</Text>
               </View>
             </View>
           </TouchableOpacity>

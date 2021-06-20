@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   View, Alert, StyleSheet, Dimensions,
   Image, Platform, TextInput, Text, Keyboard,
@@ -9,16 +9,34 @@ import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 
 const LoginPage = props => {
-  const [userName, set_userName] = useState("");
-  const [password, set_password] = useState("");
-  const [imageCode, set_imageCode] = useState("");
-  const [phoneOrMailCode, set_phoneOrMailCode] = useState("");
-  const [secure, set_secure] = useState(true);
+  const [userName, set_userName] = useState("");//用户名
+  const [password, set_password] = useState("");//密码
+  const [imageCode, set_imageCode] = useState("");//图形码
+  const [phoneOrMailCode, set_phoneOrMailCode] = useState("");//手机或邮箱验证码
+  const [secure, set_secure] = useState(true);//密码对否可见
   const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,111");//图形验证码的图
   const [code, set_code] = useState("");//图形验证码的值
   const [codeKey, set_codeKey] = useState("");
-  const [codeTitle, set_codeTitle] = useState("获取验证码");
-  const [times, set_times] = useState(60);
+  const [start, set_start] = useState(false);//是否开始计时
+  let [times, set_times] = useState(60);//计时时间
+  let workForTiming = null;
+  /*计时*/
+  const startTiming = () => {
+    rollBackTiming();
+    set_start(true);
+    workForTiming = setInterval(() => {
+      set_times(--times);
+      if (times === 0) {
+        rollBackTiming();
+      }
+    }, 1000);
+  };
+  /*计时回滚*/
+  const rollBackTiming = () => {
+    clearInterval(workForTiming);
+    set_times(60);
+    set_start(false);
+  };
   /*获取图形验证码*/
   const getImageCode = () => {
     api.getVerificationCode().then(res => {
@@ -26,6 +44,14 @@ const LoginPage = props => {
       set_code(res.key);
       set_codeKey(`${res.key}00000000000000000000000000000000`);
     });
+  };
+  /*发送验证码接口调用*/
+  const getSendVerification = () => {
+
+  };
+  /*登录接口调用*/
+  const getOnLogin = () => {
+
   };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
@@ -74,26 +100,33 @@ const LoginPage = props => {
       }
     }
   };
-  /*发送验证码*/
+  /*点击发送二维码*/
   const sendVerification = () => {
-    ready(!userName || !password || !imageCode,
-      "请输入登录名、密码和图形验证码",
-      () => {
-        console.log("发送验证码");
-      });
-    Keyboard.dismiss();
+    if (!start) {
+      ready(!userName || !password || !imageCode,
+        "请输入登录名、密码和图形验证码",
+        () => {
+          startTiming();
+          getSendVerification();
+        });
+      Keyboard.dismiss();
+    }
   };
   /*登录*/
   const onLogin = () => {
     ready(!userName || !password || !imageCode || !phoneOrMailCode,
       "请输入登录名、密码、图形验证码和手机或邮箱验证码",
-      () => {
-        console.log("登录");
-      });
+      getOnLogin);
   };
-  
+
   useMemo(() => {
     getImageCode();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      rollBackTiming();
+    };
   }, []);
 
   return (
@@ -192,7 +225,9 @@ const LoginPage = props => {
           <TouchableOpacity style={{ justifyContent: "center" }} onPress={sendVerification}>
             <View style={{ justifyContent: "center", marginRight: 5 }}>
               <View style={styles.line}>
-                <Text style={{ fontSize: 11, color: "#1D9AFF" }}>{codeTitle}</Text>
+                <Text style={{ fontSize: 10, color: start ? "#9c9c9c" : "#1D9AFF" }}>{
+                  start ? `${times}秒后重新获取` : "获取验证码"
+                }</Text>
               </View>
             </View>
           </TouchableOpacity>
