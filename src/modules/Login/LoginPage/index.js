@@ -88,35 +88,41 @@ const LoginPage = props => {
   const alertError = (message) => {
     return Alert.alert("警告", message, [{ text: "确定" }]);
   };
-  /*是否可以掉接口*/
+  /*是否可以调接口*/
   const ready = (condition, message, callback) => {
-    if (condition) {
-      return alertError(message);
-    } else {
-      if (isTrueImageCode()) {
-        callback();
+    return new Promise((resolve) => {
+      if (condition) {
+        return alertError(message);
       } else {
-        return alertError("图形验证码错误");
+        if (isTrueImageCode()) {
+          callback();
+          return resolve();
+        } else {
+          return alertError("图形验证码错误");
+        }
       }
-    }
+    });
   };
   /*点击发送二维码*/
   const sendVerification = () => {
+    const condition = !userName || !password || !imageCode;
+    const message = "请输入登录名、密码和图形验证码";
     if (!start) {
-      ready(!userName || !password || !imageCode,
-        "请输入登录名、密码和图形验证码",
-        () => {
-          startTiming();
-          getSendVerification();
-        });
-      Keyboard.dismiss();
+      ready(condition, message, () => {
+        startTiming();
+        getSendVerification();
+      }).then(() => {
+        Keyboard.dismiss();
+      });
     }
   };
   /*登录*/
   const onLogin = () => {
-    ready(!userName || !password || !imageCode || !phoneOrMailCode,
-      "请输入登录名、密码、图形验证码和手机或邮箱验证码",
-      getOnLogin);
+    const condition = !userName || !password || !imageCode || !phoneOrMailCode;
+    const message = "请输入登录名、密码、图形验证码和手机或邮箱验证码";
+    ready(condition, message, getOnLogin).then(() => {
+      Keyboard.dismiss();
+    });
   };
 
   useMemo(() => {
