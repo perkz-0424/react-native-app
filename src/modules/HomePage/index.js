@@ -1,34 +1,18 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { View, Text, Dimensions, Platform, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, Dimensions, StyleSheet, Image, Platform } from "react-native";
 import Title from "../../components/Title";
+import Warning from "./Warning";
+import Moint from "./Moint";
+import Resours from "./Resours";
+import Homework from "./Homework";
+import User from "./User";
 
-const HomePage = () => {
+const Tab = createBottomTabNavigator();
+const HomePage = ({ navigation }) => {
   const [title, set_title] = useState("告警列表");
-  const [active, set_active] = useState("告警");
-
-  const changeNav = (title) => {
-    if (title !== active) {
-      set_active(title);
-      switch (title) {
-        case "告警":
-          set_title("告警列表");
-          break;
-        case "实时监控":
-          set_title("实时监控");
-          break;
-        case "资源信息":
-          set_title("资源信息");
-          break;
-        case "维护作业":
-          set_title("维护作业");
-          break;
-        case "个人":
-          set_title("个人");
-          break;
-        default:
-          set_title("告警列表");
-      }
-    }
+  const pressNavigationEvent = (e) => {
+    console.log(e);
   };
 
   useMemo(() => {
@@ -41,97 +25,72 @@ const HomePage = () => {
     };
   }, []);
   return (
-    <View style={{ height: Dimensions.get("window").height }}>
+    <View
+      style={{ height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 24.5 }}>
       <Title
         title={title}
         onLeftPress={() => {}}
-        titleLeft={
-          <View>
-
-          </View>
-        }
+        titleLeft={<View></View>}
       />
-      <View>
-
-      </View>
-      <View style={styles.navContainer}>
+      <Tab.Navigator initialRouteName={"Warning"} lazy={true}>
         {
           bottomNav.map((item, index) => {
             return (
-              <TouchableOpacity style={styles.iconContainer} key={index} onPress={() => {changeNav(item.title);}}>
-                <Image style={active === item.title ? styles.activeImage : styles.image} source={item.icon}/>
-                <Text style={active === item.title ? styles.activeText : styles.text}>{item.title}</Text>
-              </TouchableOpacity>
+              <Tab.Screen
+                name={item.name}
+                component={item.component}
+                options={{
+                  title: item.title,
+                  tabBarIcon: ({ color }) => (
+                    <Image
+                      style={{ ...styles.image, ...{ tintColor: color } }}
+                      source={item.icon}
+                    />
+                  ),
+                }} key={index}/>
             );
           })
         }
-      </View>
+      </Tab.Navigator>
     </View>
   );
 };
 const bottomNav = [
   {
+    name: "Warning",
+    component: Warning,
     title: "告警",
     icon: require("../../assets/images/SDH/war.png")
   },
   {
+    name: "Moint",
+    component: Moint,
     title: "实时监控",
     icon: require("../../assets/images/SDH/moint.png")
   },
   {
+    name: "Resours",
+    component: Resours,
     title: "资源信息",
     icon: require("../../assets/images/SDH/resours.png")
   },
   {
+    name: "Homework",
+    component: Homework,
     title: "维护作业",
     icon: require("../../assets/images/SDH/homework.png")
   },
   {
+    name: "User",
+    component: User,
     title: "个人",
     icon: require("../../assets/images/SDH/person.png")
   },
 ];
 const styles = StyleSheet.create({
-  navContainer: {
-    width: "100%",
-    height: 60,
-    position: "absolute",
-    zIndex: 2,
-    bottom: 0,
-    marginBottom: Platform.OS === "ios" ? 0 : 24,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderTopWidth: 0.3,
-    paddingTop: 10,
-    backgroundColor: "#e7e6e6",
-    borderColor: "rgba(156,156,156,0.3)",
-  },
-  iconContainer: {
-    alignItems: "center"
-  },
   image: {
-    width: 15,
-    height: 15,
-    tintColor: "#808080",
-    marginBottom: 7
+    width: 17,
+    height: 16,
   },
-  text: {
-    color: "#808080",
-    fontWeight: "400",
-    fontSize: 10
-  },
-  activeImage: {
-    width: 15,
-    height: 15,
-    tintColor: "#4a7cf4",
-    marginBottom: 7
-  },
-  activeText: {
-    color: "#4a7cf4",
-    fontWeight: "400",
-    fontSize: 10
-  }
 });
 export default HomePage;

@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-const User = props => {
+const Moint = props => {
   return (
     <View>
-      <Text>个人</Text>
+      <Text>实时监控</Text>
     </View>
   );
 };
 
-export default User;
+export default Moint;

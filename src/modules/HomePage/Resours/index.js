@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-const User = props => {
+const Resours = props => {
   return (
     <View>
-      <Text>个人</Text>
+      <Text>资源信息</Text>
     </View>
   );
 };
 
-export default User;
+export default Resours;
