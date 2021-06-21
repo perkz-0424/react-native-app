@@ -7,6 +7,7 @@ import {
 import config from "../../../config";
 import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
+import Loading from "../../../components/Loading";
 
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
@@ -18,11 +19,12 @@ const LoginPage = props => {
   const [code, set_code] = useState("");//图形验证码的值
   const [codeKey, set_codeKey] = useState("");
   const [start, set_start] = useState(false);//是否开始计时
+  const [loading, set_loading] = useState(false);
   let [times, set_times] = useState(60);//计时时间
   let workForTiming = null;
   /*计时*/
   const startTiming = () => {
-    rollBackTiming();
+    workForTiming && rollBackTiming();
     set_start(true);
     workForTiming = setInterval(() => {
       set_times(--times);
@@ -51,7 +53,8 @@ const LoginPage = props => {
   };
   /*登录接口调用*/
   const getOnLogin = () => {
-
+    // set_loading(true);
+    props.navigation.navigate("HomePage");
   };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
@@ -137,6 +140,7 @@ const LoginPage = props => {
 
   return (
     <View style={styles.container}>
+      <Loading loading={loading} text="登入中"/>
       <View style={styles.icon}>
         <Image
           style={styles.iconImage}

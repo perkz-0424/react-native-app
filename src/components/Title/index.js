@@ -16,9 +16,9 @@ const Title = (props) => {
   }
   return (
     <View style={{
-      backgroundColor: "#f3f3f3",
-      borderBottomWidth: 0.2,
-      borderColor: "rgba(156,156,156,0.5)",
+      backgroundColor: "#e7e6e6",
+      borderBottomWidth: 0.3,
+      borderColor: "rgba(156,156,156,0.3)",
     }}>
       <View style={{ height }}/>
       <View style={{
