@@ -1,8 +1,56 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Linking } from "react-native";
 import UserButton from "../../../../components/UserButton";
+import { ActionSheet } from "@ant-design/react-native";
+import { connect } from "react-redux";
 
 const User = props => {
+  const changeTitle = (title) => {
+    props.dispatch(dispatch => {
+      dispatch({
+        type: "TITLE",
+        payload: { title }
+      });
+    });
+  };
+  const goToMyMessage = () => {
+    changeTitle("消息");
+    props.navigation.navigate("MyMessage");
+  };
+  const goToEngineeringManagement = () => {
+    changeTitle("工程态列表");
+    props.navigation.navigate("EngineeringManagement");
+  };
+  const goToAboutUs = () => {
+    changeTitle("关于我们");
+    props.navigation.navigate("AboutUs");
+  };
+  const goToPerson = () => {
+    props.navigation.navigate("Person");
+  };
+  const callMe = () => {
+    Linking.openURL("tel:057188083103").then(() => {});
+  };
+  const signOut = () => {
+    ActionSheet.showActionSheetWithOptions(
+      {
+        message: "确定退出吗?",
+        options: [
+          "退出",
+          "取消",
+        ],
+        cancelButtonIndex: 1,
+        destructiveButtonIndex: 0,
+      }, n => {
+        if (n === 0) {
+          clearDataAndSignOut();
+        }
+      }
+    );
+  };
+  const clearDataAndSignOut = () => {
+    props.navigation.navigate("Login");
+  };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: "rgb(216,222,222)" }}>
       <View style={{ flexDirection: "row", height: 100, backgroundColor: "#FFFFFF", alignItems: "center" }}>
@@ -24,17 +72,17 @@ const User = props => {
         </View>
       </View>
       <View style={{ paddingTop: 10 }}>
-        <UserButton onPress={() => {}}>我的消息</UserButton>
-        <UserButton onPress={() => {}}>工程态管理</UserButton>
+        <UserButton onPress={goToMyMessage}>我的消息</UserButton>
+        <UserButton onPress={goToEngineeringManagement}>工程态管理</UserButton>
       </View>
       <View style={{ paddingTop: 10 }}>
-        <UserButton onPress={() => {}}>关于我们</UserButton>
-        <UserButton onPress={() => {}}>隐私政策</UserButton>
-        <UserButton onPress={() => {}}>服务热线</UserButton>
-        <UserButton onPress={() => {}}>退出</UserButton>
+        <UserButton onPress={goToAboutUs}>关于我们</UserButton>
+        <UserButton onPress={goToPerson}>隐私政策</UserButton>
+        <UserButton onPress={callMe}>服务热线</UserButton>
+        <UserButton onPress={signOut}>退出</UserButton>
       </View>
     </View>
   );
 };
 
-export default User;
+export default connect(state => ({ state }))(User);
