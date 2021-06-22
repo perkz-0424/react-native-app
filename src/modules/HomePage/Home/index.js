@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Warning from "../Warning";
-import Moint from "../Moint";
-import Resours from "../Resours";
-import Homework from "../Homework";
-import User from "../User";
+import Warning from "./Warning";
+import Moint from "./Moint";
+import Resours from "./Resours";
+import Homework from "./Homework";
+import User from "./User";
 
 const bottomNav = [
   {

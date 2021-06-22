@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 const Area = props => {
   return (
     <View>
-      <Text>维护作业</Text>
+      <Text>地域</Text>
     </View>
   );
 };
