@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Dimensions, StyleSheet, Image, Platform, TouchableOpacity, Text } from "react-native";
+import { View, Dimensions, Image, Platform, TouchableOpacity, Text } from "react-native";
 import Title from "../../components/Title";
 import Warning from "./Warning";
 import Moint from "./Moint";
@@ -9,78 +9,6 @@ import Homework from "./Homework";
 import User from "./User";
 
 const Tab = createBottomTabNavigator();
-const HomePage = () => {
-  const [title, set_title] = useState("告警列表");
-  const pressNavigationEvent = (name) => {
-    switch (name) {
-      case "Warning":
-        set_title("告警列表");
-        break;
-      case "Moint":
-        set_title("实时监控");
-        break;
-      case "Resours":
-        set_title("资源信息");
-        break;
-      case "Homework":
-        set_title("维护作业");
-        break;
-      case "User":
-        set_title("个人中心");
-        break;
-      default:
-        set_title("告警列表");
-    }
-  };
-  return (
-    <View
-      style={{ height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25 }}>
-      {
-        title !== "个人中心" ? <Title
-          title={title}
-          onLeftPress={() => {}}
-          titleLeft={<View><Text>浙江</Text></View>}
-        /> : null
-      }
-      <Tab.Navigator initialRouteName={"Warning"} lazy={true}>
-        {
-          bottomNav.map((item, index) => {
-            return (
-              <Tab.Screen
-                key={index}
-                name={item.name}
-                component={item.component}
-                options={{
-                  tabBarButton: (props) => {
-                    return (
-                      <TouchableOpacity {...props} onPress={() => {
-                        props.onPress();
-                        pressNavigationEvent(item.name);
-                      }}><Image style={{
-                        ...styles.image,
-                        ...{
-                          tintColor: props.accessibilityStates[0] === "selected" ? "#469af7" : "#9c9c9c"
-                        }
-                      }} source={item.icon}
-                      /><Text style={{
-                        fontSize: 9,
-                        marginTop: 8,
-                        fontWeight: "400",
-                        color: props.accessibilityStates[0] === "selected" ? "#469af7" : "#9c9c9c"
-                      }}>{item.title}
-                      </Text>
-                      </TouchableOpacity>
-                    );
-                  }
-                }}
-              />
-            );
-          })
-        }
-      </Tab.Navigator>
-    </View>
-  );
-};
 const bottomNav = [
   {
     name: "Warning",
@@ -113,10 +41,73 @@ const bottomNav = [
     icon: require("../../assets/images/SDH/person.png")
   },
 ];
-const styles = StyleSheet.create({
-  image: {
-    width: 17,
-    height: 16,
-  },
-});
+const HomePage = () => {
+  const [title, set_title] = useState("告警列表");
+  const [are, set_are] = useState("浙江省");
+  const pressNavigationEvent = (name) => {
+    switch (name) {
+      case "Warning":
+        set_title("告警列表");
+        break;
+      case "Moint":
+        set_title("实时监控");
+        break;
+      case "Resours":
+        set_title("资源信息");
+        break;
+      case "Homework":
+        set_title("维护作业");
+        break;
+      case "User":
+        set_title("个人中心");
+        break;
+      default:
+        set_title("告警列表");
+    }
+  };
+  return (
+    <View
+      style={{ height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25 }}>
+      <Title
+        title={title === "个人中心" ? "" : title}
+        onLeftPress={() => {}}
+        titleLeft={
+          <View style={{ display: title === "个人中心" ? "none" : "flex" }}>
+            <Text style={{ fontWeight: "300" }}>{are}</Text>
+          </View>
+        }
+      />
+      <Tab.Navigator initialRouteName={"Warning"} lazy={true}>
+        {
+          bottomNav.map((item, index) => {
+            return (
+              <Tab.Screen
+                key={index}
+                name={item.name}
+                component={item.component}
+                options={{
+                  tabBarButton: (props) => {
+                    const color = props.accessibilityStates[0] === "selected" ? "#469af7" : "#9c9c9c";
+                    return (
+                      <TouchableOpacity {...props} onPress={() => {
+                        props.onPress();
+                        pressNavigationEvent(item.name);
+                      }}>
+                        <Image style={{ width: 17, height: 16, tintColor: color }} source={item.icon}
+                        />
+                        <Text style={{ fontSize: 9, marginTop: 8, fontWeight: "400", color: color }}>
+                          {item.title}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  }
+                }}
+              />
+            );
+          })
+        }
+      </Tab.Navigator>
+    </View>
+  );
+};
 export default HomePage;
