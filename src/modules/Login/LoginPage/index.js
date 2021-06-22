@@ -54,6 +54,8 @@ const LoginPage = props => {
   /*登录接口调用*/
   const getOnLogin = () => {
     // set_loading(true);
+    set_phoneOrMailCode("");
+    set_imageCode("");
     props.navigation.navigate("HomePage");
   };
   /*跳转到阅读隐私权政策*/
