@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 
 const Moint = props => {
   return (
-    <View>
+    <View style={{ width: "100%", flex: 1 }}>
       <Text>实时监控</Text>
     </View>
   );

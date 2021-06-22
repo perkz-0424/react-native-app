@@ -1,66 +1,42 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { connect } from "react-redux";
 import Warning from "./Warning";
 import Moint from "./Moint";
 import Resours from "./Resours";
 import Homework from "./Homework";
 import User from "./User";
 
-const bottomNav = [
-  {
-    name: "Warning",
-    component: Warning,
-    title: "告警",
-    icon: require("../../../assets/images/SDH/war.png")
-  },
-  {
-    name: "Moint",
-    component: Moint,
-    title: "实时监控",
-    icon: require("../../../assets/images/SDH/moint.png")
-  },
-  {
-    name: "Resours",
-    component: Resours,
-    title: "资源信息",
-    icon: require("../../../assets/images/SDH/resours.png")
-  },
-  {
-    name: "Homework",
-    component: Homework,
-    title: "维护作业",
-    icon: require("../../../assets/images/SDH/homework.png")
-  },
-  {
-    name: "User",
-    component: User,
-    title: "个人",
-    icon: require("../../../assets/images/SDH/person.png")
-  },
-];
 const Tab = createBottomTabNavigator();
 const Home = props => {
-  const [title, set_title] = useState("告警列表");
+  const changeTitle = (title) => {
+    props.dispatch(dispatch => {
+      dispatch({
+        type: "TITLE",
+        payload: { title }
+      });
+    });
+  };
   const pressNavigationEvent = (name) => {
     switch (name) {
       case "Warning":
-        set_title("告警列表");
+        changeTitle("告警列表");
         break;
       case "Moint":
-        set_title("实时监控");
+        changeTitle("实时监控");
         break;
       case "Resours":
-        set_title("资源信息");
+        changeTitle("资源信息");
         break;
       case "Homework":
-        set_title("维护作业");
+        changeTitle("维护作业");
         break;
       case "User":
-        set_title("个人中心");
+        changeTitle("个人中心");
         break;
       default:
-        set_title("告警列表");
+        changeTitle("告警列表");
     }
   };
   return (
@@ -93,5 +69,37 @@ const Home = props => {
     </View>
   );
 };
+const bottomNav = [
+  {
+    name: "Warning",
+    component: Warning,
+    title: "告警",
+    icon: require("../../../assets/images/SDH/war.png")
+  },
+  {
+    name: "Moint",
+    component: Moint,
+    title: "实时监控",
+    icon: require("../../../assets/images/SDH/moint.png")
+  },
+  {
+    name: "Resours",
+    component: Resours,
+    title: "资源信息",
+    icon: require("../../../assets/images/SDH/resours.png")
+  },
+  {
+    name: "Homework",
+    component: Homework,
+    title: "维护作业",
+    icon: require("../../../assets/images/SDH/homework.png")
+  },
+  {
+    name: "User",
+    component: User,
+    title: "个人",
+    icon: require("../../../assets/images/SDH/person.png")
+  },
+];
 
-export default Home;
+export default connect(state => ({ state }))(Home);
