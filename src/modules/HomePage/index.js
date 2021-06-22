@@ -10,6 +10,44 @@ import EngineeringManagement from "./EngineeringManagement";
 import AboutUs from "./AboutUs";
 
 const Stack = createStackNavigator();
+const titles = [
+  ["区域选择"],
+  ["消息", "工程态列表", "关于我们"],
+  ["告警列表", "实时监控", "资源信息", "维护作业"],
+  ["个人中心"]
+];
+const routers = [
+  {
+    title: "主页",
+    name: "Home",
+    component: Home,
+    type: TransitionPresets.ScaleFromCenterAndroid
+  },
+  {
+    title: "区域选择",
+    name: "Area",
+    component: Area,
+    type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "消息",
+    name: "MyMessage",
+    component: MyMessage,
+    type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "工程态列表",
+    name: "EngineeringManagement",
+    component: EngineeringManagement,
+    type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "关于我们",
+    name: "AboutUs",
+    component: AboutUs,
+    type: TransitionPresets.SlideFromRightIOS
+  }
+];
 const HomePage = (props) => {
   const title = props.state.titles.title;
   const area = props.state.areas.data;
@@ -86,42 +124,4 @@ const HomePage = (props) => {
     </View>
   );
 };
-const titles = [
-  ["区域选择"],
-  ["消息", "工程态列表", "关于我们"],
-  ["告警列表", "实时监控", "资源信息", "维护作业"],
-  ["个人中心"]
-];
-const routers = [
-  {
-    title: "主页",
-    name: "Home",
-    component: Home,
-    type: TransitionPresets.ScaleFromCenterAndroid
-  },
-  {
-    title: "区域选择",
-    name: "Area",
-    component: Area,
-    type: TransitionPresets.SlideFromRightIOS
-  },
-  {
-    title: "消息",
-    name: "MyMessage",
-    component: MyMessage,
-    type: TransitionPresets.SlideFromRightIOS
-  },
-  {
-    title: "工程态列表",
-    name: "EngineeringManagement",
-    component: EngineeringManagement,
-    type: TransitionPresets.SlideFromRightIOS
-  },
-  {
-    title: "关于我们",
-    name: "AboutUs",
-    component: AboutUs,
-    type: TransitionPresets.SlideFromRightIOS
-  }
-];
 export default connect(state => ({ state }))(HomePage);

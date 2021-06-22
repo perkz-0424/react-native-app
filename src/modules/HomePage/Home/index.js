@@ -9,6 +9,38 @@ import Homework from "./Homework";
 import User from "./User";
 
 const Tab = createBottomTabNavigator();
+const bottomNav = [
+  {
+    name: "Warning",
+    component: Warning,
+    title: "告警",
+    icon: require("../../../assets/images/SDH/war.png")
+  },
+  {
+    name: "Moint",
+    component: Moint,
+    title: "实时监控",
+    icon: require("../../../assets/images/SDH/moint.png")
+  },
+  {
+    name: "Resours",
+    component: Resours,
+    title: "资源信息",
+    icon: require("../../../assets/images/SDH/resours.png")
+  },
+  {
+    name: "Homework",
+    component: Homework,
+    title: "维护作业",
+    icon: require("../../../assets/images/SDH/homework.png")
+  },
+  {
+    name: "User",
+    component: User,
+    title: "个人",
+    icon: require("../../../assets/images/SDH/person.png")
+  },
+];
 const Home = props => {
   const changeTitle = (title) => {
     props.dispatch(dispatch => {
@@ -69,37 +101,5 @@ const Home = props => {
     </View>
   );
 };
-const bottomNav = [
-  {
-    name: "Warning",
-    component: Warning,
-    title: "告警",
-    icon: require("../../../assets/images/SDH/war.png")
-  },
-  {
-    name: "Moint",
-    component: Moint,
-    title: "实时监控",
-    icon: require("../../../assets/images/SDH/moint.png")
-  },
-  {
-    name: "Resours",
-    component: Resours,
-    title: "资源信息",
-    icon: require("../../../assets/images/SDH/resours.png")
-  },
-  {
-    name: "Homework",
-    component: Homework,
-    title: "维护作业",
-    icon: require("../../../assets/images/SDH/homework.png")
-  },
-  {
-    name: "User",
-    component: User,
-    title: "个人",
-    icon: require("../../../assets/images/SDH/person.png")
-  },
-];
 
 export default connect(state => ({ state }))(Home);
