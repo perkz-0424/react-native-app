@@ -1,9 +1,18 @@
 /*地域数据*/
 const areas = (state = {
-  data: "浙江省"
+  data: [{ name: "浙江省", level: "province" }]
 }, action) => {
   switch (action.type) {
     case "AREA":
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+};
+/*地域等级*/
+const level = (state = { level: "province" }, action) => {
+  switch (action.type) {
+    case "LEVEL":
       return { ...state, ...action.payload };
     default:
       return state;
@@ -20,4 +29,4 @@ const titles = (state = {
       return state;
   }
 };
-export { areas, titles };
+export { areas, titles, level };

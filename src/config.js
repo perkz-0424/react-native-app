@@ -47,6 +47,7 @@ const config = {
     "#D35E1A",
     "#DFA479",
   ],
+  bgColor: "rgb(228,231,231)",
   version: "2.5.7 20210620"
 };
 export default config;

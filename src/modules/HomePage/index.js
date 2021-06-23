@@ -51,7 +51,9 @@ const routers = [
 const HomePage = (props) => {
   const title = props.state.titles.title;
   const area = props.state.areas.data;
+  const level = props.state.level.level;
   const [backTitle, set_backTitle] = useState("告警列表");
+  const setArea = () => area.filter(v => v.level === level)[0].name;
   const changeTitle = (title) => {
     props.dispatch(dispatch => {
       dispatch({
@@ -91,7 +93,7 @@ const HomePage = (props) => {
                 /> :
                 <View style={{ flexDirection: "row" }}>
                   <Text style={{ fontWeight: "300", fontSize: 12 }}>
-                    {area}
+                    {setArea()}
                   </Text>
                   <View style={{ justifyContent: "center", alignItems: "center", marginLeft: 8 }}>
                     <Image

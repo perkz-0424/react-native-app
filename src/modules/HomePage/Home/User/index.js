@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, Linking } from "react-native";
 import UserButton from "../../../../components/UserButton";
 import { ActionSheet } from "@ant-design/react-native";
 import { connect } from "react-redux";
+import config from "../../../../config";
 
 const User = props => {
   const changeTitle = (title) => {
@@ -52,7 +53,7 @@ const User = props => {
     props.navigation.navigate("Login");
   };
   return (
-    <View style={{ width: "100%", flex: 1, backgroundColor: "rgb(216,222,222)" }}>
+    <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
       <View style={{ flexDirection: "row", height: 100, backgroundColor: "#FFFFFF", alignItems: "center" }}>
         <View style={{ paddingLeft: 20, paddingTop: 15, paddingBottom: 15 }}>
           <Image

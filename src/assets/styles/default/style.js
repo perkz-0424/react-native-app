@@ -1,3 +1,4 @@
+import config from "../../../config";
 const defaultStyle = {
   // 文字色
   color_text_base: "#000000",                  // 基本
@@ -145,10 +146,10 @@ const defaultStyle = {
   toast_fill: "rgba(0, 0, 0, .8)",
 
   // search_bar
-  search_bar_fill: "#efeff4",
+  search_bar_fill: config.bgColor,
   search_bar_height: 44,
   search_bar_input_height: 28,
-  search_bar_font_size: 15,
+  search_bar_font_size: 13,
   search_color_icon: "#bbbbbb", // input search icon 的背景色
 
   // notice_bar
@@ -159,7 +160,7 @@ const defaultStyle = {
   switch_fill: "#4dd865",
 
   // tag
-  tag_height: 25,
+  tag_height: 20,
   tag_small_height: 15,
 
   // picker
