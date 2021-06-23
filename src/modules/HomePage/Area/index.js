@@ -57,8 +57,8 @@ const Area = props => {
       </View>
     );
   };
-  const changeArea = (item) => {
-    set_page(page + 1);
+  const changeArea = ({ level, name, page }) => {
+    set_page(page);
   };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>

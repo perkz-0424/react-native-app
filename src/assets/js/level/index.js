@@ -5,18 +5,6 @@ const level = [
     parents: {},
   },
   {
-    category: "province",
-    name: "江苏省",
-    parents: {},
-  },
-  {
-    category: "city",
-    name: "南京市",
-    parents: {
-      province: "江苏省"
-    },
-  },
-  {
     category: "city",
     name: "杭州市",
     parents: {

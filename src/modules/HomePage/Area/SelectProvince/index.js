@@ -18,19 +18,10 @@ const SelectProvince = (props) => {
       delete areas[2].name;
       delete areas[3].name;
       props.dispatch(dispatch => {
-        dispatch({
-          type: "LEVEL",
-          payload: { level: "province", index: 0 }
-        });
-        dispatch({
-          type: "AREA",
-          payload: { data: areas }
-        });
+        dispatch({ type: "LEVEL", payload: { level: "province", index: 0 } });
+        dispatch({ type: "AREA", payload: { data: areas } });
       });
-      props.changeArea({
-        level: "province",
-        name: province
-      });
+      props.changeArea({ level: "province", name: province, page: 1 });
     }
   };
   const renderProvinceRow = (provinceItem) => {

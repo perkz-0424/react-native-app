@@ -8,30 +8,37 @@ const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
   const province = props.area.filter(v => v.level === "province")[0].name;
   const city = props.area.filter(v => v.level === "city")[0].name;
-  const cities = level.city.filter(v => v.parents.province === province);
+  const getCities = () => {
+    const cities = level.city.filter(v => v.parents.province === province);
+    return [{ name: "选择全部" }].concat(cities);
+  };
+  //点击切换城市
   const changeCity = (item) => {
     const checkCity = item.item.name; //选中的市级
     const areas = [...props.state.areas.data]; //地市信息
     const nowCity = areas[1].name; //现在所在的市级
-    if (checkCity !== nowCity) {
-      areas[1].name = checkCity;
-      delete areas[2].name;
-      delete areas[3].name;
-      props.dispatch(dispatch => {
-        dispatch({
-          type: "LEVEL",
-          payload: { level: "city", index: 1 }
-        });
-        dispatch({
-          type: "AREA",
-          payload: { data: areas }
-        });
-      });
-      props.changeArea({
-        level: "city",
-        name: checkCity
-      });
+    if (checkCity === "选择全部") {
+      if (nowCity) {
+        delete areas[3].name;
+        delete areas[2].name;
+        delete areas[1].name;
+        dispatch("province", 0, areas, province, 1);
+      }
+    } else {
+      if (checkCity !== nowCity) {
+        areas[1].name = checkCity;
+        delete areas[2].name;
+        delete areas[3].name;
+        dispatch("city", 1, areas, checkCity, 2);
+      }
     }
+  };
+  const dispatch = (level, index, areas, name, page) => {
+    props.dispatch(dispatch => {
+      dispatch({ type: "LEVEL", payload: { level, index } });
+      dispatch({ type: "AREA", payload: { data: areas } });
+    });
+    props.changeArea({ level, name, page });
   };
   const renderCityRow = (item) => {
     return (
@@ -60,7 +67,7 @@ const SelectCity = (props) => {
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <FlatList
-        data={cities}
+        data={getCities()}
         ListHeaderComponent={renderHeader}
         keyExtractor={(item) => item.name}
         renderItem={renderCityRow}
