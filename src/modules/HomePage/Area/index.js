@@ -3,11 +3,17 @@ import { View, Keyboard, TouchableOpacity, Text, PixelRatio } from "react-native
 import { connect } from "react-redux";
 import { SearchBar, Tabs } from "@ant-design/react-native";
 import config from "../../../config";
+import SelectProvince from "./SelectProvince";
+import SelectCity from "./SelectCity";
+import SelectTown from "./SelectTown";
+import SelectStation from "./SelectStation";
 
-export const fontScale = PixelRatio.getFontScale();
+const fontScale = PixelRatio.getFontScale();
 const Area = props => {
+  const tabs = props.state.areas.data;
+  const index = props.state.level.index + 1 === 4 ? 3 : props.state.level.index + 1;
   const [searchValue, set_searchValue] = useState("");
-  const [page, set_page] = useState(0);
+  const [page, set_page] = useState(index);
   const renderTabBar = (tabBarPropsType) => {
     return (
       <View
@@ -21,29 +27,31 @@ const Area = props => {
         }}
       >
         {
-          tabBarPropsType.tabs.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={{
-                  width: "25%",
-                  height: "100%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
-                  borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
-                }}
-                onPress={() => {set_page(index);}}
-              >
-                <Text
+          tabBarPropsType.tabs.map((item, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
                   style={{
-                    fontSize: 14 / fontScale,
-                    color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
+                    width: "25%",
+                    height: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
+                    borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
                   }}
+                  onPress={() => {set_page(index);}}
                 >
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            )
+                  <Text
+                    style={{
+                      fontSize: 14 / fontScale,
+                      color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
+                    }}
+                  >
+                    {item.name ? item.name : "请选择"}
+                  </Text>
+                </TouchableOpacity>
+              );
+            }
           )
         }
       </View>
@@ -65,15 +73,10 @@ const Area = props => {
           set_searchValue(value);
         }}
       />
-      <View>
+      <View style={{ flex: 1 }}>
         <Tabs
           tabBarPosition="top"
-          tabs={[
-            { title: "浙江省" },
-            { title: "请选择" },
-            { title: "请选择" },
-            { title: "请选择" },
-          ]}
+          tabs={tabs}
           renderTabBar={renderTabBar}
           initialPage={0}
           tabBarBackgroundColor="#FFFFFF"
@@ -83,8 +86,12 @@ const Area = props => {
           tabBarUnderlineStyle={{ width: 10, height: 3 }}
           prerenderingSiblingsNumber={3}
           page={page}
-          animated={true}
+          animated={false}
         >
+          <SelectProvince area={tabs} navigation={props.navigation} changeArea={() => {}}/>
+          <SelectCity/>
+          <SelectTown/>
+          <SelectStation/>
         </Tabs>
       </View>
     </View>
