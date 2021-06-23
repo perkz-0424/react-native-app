@@ -57,6 +57,9 @@ const Area = props => {
       </View>
     );
   };
+  const changeArea = (item) => {
+    set_page(page + 1);
+  };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
       <SearchBar
@@ -88,8 +91,8 @@ const Area = props => {
           page={page}
           animated={false}
         >
-          <SelectProvince area={tabs} navigation={props.navigation} changeArea={() => {}}/>
-          <SelectCity/>
+          <SelectProvince area={tabs} navigation={props.navigation} changeArea={changeArea}/>
+          <SelectCity area={tabs} navigation={props.navigation} changeArea={changeArea}/>
           <SelectTown/>
           <SelectStation/>
         </Tabs>

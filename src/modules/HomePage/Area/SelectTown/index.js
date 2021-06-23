@@ -5,7 +5,7 @@ const SelectTown = () => {
   return (
     <View>
       <Text>
-        区级
+
       </Text>
     </View>
   );

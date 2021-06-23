@@ -5,7 +5,7 @@ const SelectStation = () => {
   return (
     <View>
       <Text>
-        局站
+
       </Text>
     </View>
   );

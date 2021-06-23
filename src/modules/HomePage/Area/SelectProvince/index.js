@@ -20,7 +20,7 @@ const SelectProvince = (props) => {
       props.dispatch(dispatch => {
         dispatch({
           type: "LEVEL",
-          payload: { level: "province" }
+          payload: { level: "province", index: 0 }
         });
         dispatch({
           type: "AREA",
@@ -35,14 +35,10 @@ const SelectProvince = (props) => {
   };
   const renderProvinceRow = (provinceItem) => {
     return <RadioItem
-      style={{
-        justifyContent: "center"
-      }}
+      style={{ justifyContent: "center" }}
       key={provinceItem.index}
       checked={provinceItem.item.name === province}
-      onChange={() => {
-        changeProvince(provinceItem);
-      }}
+      onChange={() => {changeProvince(provinceItem);}}
     >
       <View style={{
         flex: 1,
@@ -52,24 +48,20 @@ const SelectProvince = (props) => {
       </View>
     </RadioItem>;
   };
+  const renderHeader = () => {
+    return (
+      <Text style={{ fontSize: 12, paddingLeft: 12, paddingTop: 11, paddingBottom: 11, color: "#999999" }}>
+        选择省份
+      </Text>
+    );
+  };
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <FlatList
-        ListHeaderComponent={
-          () => <Text
-            style={{
-              fontSize: 13,
-              paddingLeft: 12,
-              paddingTop: 14,
-              paddingBottom: 8,
-              color: "#999999"
-            }}>
-            选择省份
-          </Text>
-        }
-        keyExtractor={(item) => item.name}
         data={level.province}
-        renderItem={(item) => renderProvinceRow(item)}
+        ListHeaderComponent={renderHeader}
+        keyExtractor={(item) => item.name}
+        renderItem={renderProvinceRow}
       />
     </View>
   );

@@ -11,6 +11,13 @@ const level = [
   },
   {
     category: "city",
+    name: "南京市",
+    parents: {
+      province: "江苏省"
+    },
+  },
+  {
+    category: "city",
     name: "杭州市",
     parents: {
       province: "浙江省"
@@ -717,12 +724,8 @@ const level = [
     },
   },
 ];
-const province = level
-  .filter(e => e.category === "province");
-
-const city = level
-  .filter(e => e.category === "city");
-
+const province = level.filter(e => e.category === "province");
+const city = level.filter(e => e.category === "city");
 const allTown = level.filter(e => e.category === "town");
 
 export default {
