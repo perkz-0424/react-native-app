@@ -9,6 +9,7 @@ import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 import Loading from "../../../components/Loading";
 
+const crypto = require("crypto-js");
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
   const [password, set_password] = useState("");//密码
@@ -80,7 +81,8 @@ const LoginPage = props => {
   };
   /*判断图形验证码是否正确*/
   const isTrueImageCode = () => {
-    const { imagePwd, imageIv } = config;
+    const { imageKey, imageIv } = config;
+    const base64 = crypto.enc.Base64.parse(code);
     // const decipher = crypto.createDecipheriv("aes-128-cbc", imagePwd, imageIv);
     // decipher.setAutoPadding(false);
     // let dec = decipher.update(codeKey, "hex", "utf8");

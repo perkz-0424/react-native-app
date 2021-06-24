@@ -1,7 +1,7 @@
 const config = {
   webH5Url: "http://192.168.30.150:3090",
   Url: "http://10.52.14.219:3080",
-  imagePwd: "thisisakeykeykey",
+  imageKey: "thisisakeykeykey",
   imageIv:"This is an IV456",
   // 实时数据刷新间隔
   realTimeFetchInterval: 1000 * 5,
