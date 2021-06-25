@@ -33,10 +33,17 @@ const SelectCity = (props) => {
       }
     }
   };
+  //区域变更
   const dispatch = (level, index, areas, name, page) => {
     props.dispatch(dispatch => {
-      dispatch({ type: "LEVEL", payload: { level, index } });
-      dispatch({ type: "AREA", payload: { data: areas } });
+      dispatch({
+        type: "AREA",
+        payload: {
+          data: areas,
+          level,
+          index,
+        }
+      });
     });
     props.changeArea({ level, name, page });
   };

@@ -3,6 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "nodeify": "rn-nodeify --hack --install process,crypto,events,constant,console,stream,url,util",
+    "postinstall": "yarn nodeify",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
@@ -20,8 +22,11 @@
     "@react-navigation/stack": "^5.14.5",
     "babel-plugin-import": "^1.13.3",
     "buffer": "^6.0.3",
+    "console-browserify": "^1.2.0",
     "crypto-js": "^3.1.9-1",
+    "events": "^1.1.1",
     "native-base": "^2.15.2",
+    "process": "^0.11.10",
     "react": "17.0.1",
     "react-native": "^0.64.0",
     "react-native-crypto": "^2.2.0",
@@ -29,6 +34,7 @@
     "react-native-pager-view": "^5.2.1",
     "react-native-picker-select": "^8.0.4",
     "react-native-pwd-input": "^1.0.1",
+    "react-native-randombytes": "^3.6.1",
     "react-native-reanimated": "^2.2.0",
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.4.0",
@@ -38,8 +44,12 @@
     "react-navigation-animated-switch": "^0.6.4",
     "react-navigation-stack": "^2.10.4",
     "react-redux": "^7.2.4",
+    "readable-stream": "^1.0.33",
     "redux": "^4.1.0",
-    "redux-thunk": "^2.3.0"
+    "redux-thunk": "^2.3.0",
+    "stream-browserify": "^1.0.0",
+    "url": "^0.10.3",
+    "util": "^0.10.4"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
@@ -49,9 +59,30 @@
     "eslint": "^7.28.0",
     "jest": "^27.0.4",
     "metro-react-native-babel-preset": "^0.66.0",
-    "react-test-renderer": "17.0.1"
+    "react-test-renderer": "17.0.1",
+    "rn-nodeify": "github:tradle/rn-nodeify"
   },
   "jest": {
     "preset": "react-native"
+  },
+  "react-native": {
+    "console": "console-browserify",
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
+  },
+  "browser": {
+    "console": "console-browserify",
+    "crypto": "react-native-crypto",
+    "_stream_transform": "readable-stream/transform",
+    "_stream_readable": "readable-stream/readable",
+    "_stream_writable": "readable-stream/writable",
+    "_stream_duplex": "readable-stream/duplex",
+    "_stream_passthrough": "readable-stream/passthrough",
+    "stream": "stream-browserify"
   }
 }

@@ -4,12 +4,14 @@ import {
   Image, Platform, TextInput, Text, Keyboard,
   TouchableWithoutFeedback, TouchableOpacity,
 } from "react-native";
+import { Toast } from "@ant-design/react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 import Loading from "../../../components/Loading";
+import { encrypt } from "../../../assets/crypto";
+import { connect } from "react-redux";
 
-const crypto = require("crypto-js");
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
   const [password, set_password] = useState("");//密码
@@ -18,11 +20,15 @@ const LoginPage = props => {
   const [secure, set_secure] = useState(true);//密码对否可见
   const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,111");//图形验证码的图
   const [code, set_code] = useState("");//图形验证码的值
-  const [codeKey, set_codeKey] = useState("");
   const [start, set_start] = useState(false);//是否开始计时
   const [loading, set_loading] = useState(false);
+  const [remainDays, set_remainDays] = useState(0);
   let [times, set_times] = useState(60);//计时时间
   let workForTiming = null;
+  /*错误提示*/
+  const errorMessage = (err = "网络错误", info) => {
+    Toast.fail(err, 1);
+  };
   /*计时*/
   const startTiming = () => {
     workForTiming && rollBackTiming();
@@ -45,19 +51,73 @@ const LoginPage = props => {
     api.getVerificationCode().then(res => {
       set_imageSource(`data:image/jpeg;base64,${res.img}`);
       set_code(res.key);
-      set_codeKey(`${res.key}00000000000000000000000000000000`);
     });
   };
   /*发送验证码接口调用*/
   const getSendVerification = () => {
-
+    api.sendPhoneOrMailVerificationCode(
+      encrypt(userName),
+      encrypt(password),
+      imageCode,
+      "mail", // TODO: 等后端改完接口删除mail，这样手机和邮箱都发送
+    ).then(res => {
+      if (res.msg !== "success") {
+        failSend(res.message);
+      } else {
+        //成功发送，开始倒计时
+        startTiming();
+      }
+    }).catch(() => {
+      failSend("发送失败");
+    });
+  };
+  /*发送失败*/
+  const failSend = (message) => {
+    rollBackTiming();
+    getImageCode();
+    errorMessage(message);
   };
   /*登录接口调用*/
   const getOnLogin = () => {
-    // set_loading(true);
+    set_loading(true);
+    api.getLogin(
+      encrypt(userName),
+      encrypt(password),
+      imageCode,
+      encrypt(phoneOrMailCode),
+    ).then(res => {
+      set_loading(false);
+      const RD = parseInt(res["remain_days"], 10);
+      if (RD) {
+        set_remainDays(RD);
+        if (RD > 70 && RD <= 80) {
+          // TODO: 密码快超期（70-80）
+        } else if (RD > 80 && RD <= 90) {
+          // TODO: 密码快超期（80-90）
+        } else {
+          // TODO: 密码超期（大于90天）
+        }
+      } else {
+        saveUserMessage(res);
+      }
+    }).catch(error => {
+      // TODO: 汇报登录错误
+      set_loading(false);
+    });
+  };
+  /*存储用户信息*/
+  const saveUserMessage = (res) => {
+    saveToken(res.token);
+    props.dispatch(dispatch => {
+      dispatch({ type: "USERMESSAGE", payload: { ...res } });
+    });
     set_phoneOrMailCode("");
     set_imageCode("");
     props.navigation.navigate("HomePage");
+  };
+  /*存Token*/
+  const saveToken = (token) => {
+    // TODO: 存token
   };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
@@ -81,14 +141,9 @@ const LoginPage = props => {
   };
   /*判断图形验证码是否正确*/
   const isTrueImageCode = () => {
-    const { imageKey, imageIv } = config;
-    const base64 = crypto.enc.Base64.parse(code);
-    // const decipher = crypto.createDecipheriv("aes-128-cbc", imagePwd, imageIv);
-    // decipher.setAutoPadding(false);
-    // let dec = decipher.update(codeKey, "hex", "utf8");
-    // dec += decipher.final("utf8");
-    // const dict = dec.split("");
-    // const correct = dict[0] + dict[1] + dict[2] + dict[3];
+    //TODO: 前端没办法解密图形验证码
+
+    //const { imageKey, imageIv } = config;
     return true;
   };
   /*弹出错误警告*/
@@ -116,7 +171,6 @@ const LoginPage = props => {
     const message = "请输入登录名、密码和图形验证码";
     if (!start) {
       ready(condition, message, () => {
-        startTiming();
         getSendVerification();
       }).then(() => {
         Keyboard.dismiss();
@@ -226,7 +280,7 @@ const LoginPage = props => {
         <View style={styles.inputBox}>
           <View style={styles.inputContainer}>
             <TextInput
-              maxLength={6}
+              maxLength={15}
               onChangeText={phoneOrMailCodeChange}
               style={styles.inputText}
               placeholder="请输入电信手机或邮箱验证码"
@@ -389,4 +443,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginPage;
+export default connect(state => ({ state }))(LoginPage);

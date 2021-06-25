@@ -18,8 +18,7 @@ const SelectProvince = (props) => {
       delete areas[2].name;
       delete areas[3].name;
       props.dispatch(dispatch => {
-        dispatch({ type: "LEVEL", payload: { level: "province", index: 0 } });
-        dispatch({ type: "AREA", payload: { data: areas } });
+        dispatch({ type: "AREA", payload: { data: areas, level: "province", index: 0 } });
       });
       props.changeArea({ level: "province", name: province, page: 1 });
     }

@@ -51,7 +51,7 @@ const routers = [
 const HomePage = (props) => {
   const title = props.state.titles.title;
   const area = props.state.areas.data;
-  const level = props.state.level.level;
+  const level = props.state.areas.level;
   const [backTitle, set_backTitle] = useState("告警列表");
   const setArea = () => area.filter(v => v.level === level)[0].name;
   const changeTitle = (title) => {

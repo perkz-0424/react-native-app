@@ -1,5 +1,6 @@
 const config = {
   webH5Url: "http://192.168.30.150:3090",
+  // Url: "http://122.229.8.173:3091/pyapi", //线上环境
   Url: "http://10.52.14.219:3080",
   imageKey: "thisisakeykeykey",
   imageIv:"This is an IV456",

@@ -11,7 +11,7 @@ import SelectStation from "./SelectStation";
 const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
-  const index = props.state.level.index + 1 === 4 ? 3 : props.state.level.index + 1;
+  const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const [searchValue, set_searchValue] = useState("");
   const [page, set_page] = useState(index);
   const renderTabBar = (tabBarPropsType) => {
