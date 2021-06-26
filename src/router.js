@@ -6,6 +6,7 @@ import Login from "./modules/Login";
 import Person from "./modules/Person";
 import ForgetPwd from "./modules/ForgetPwd";
 import HomePage from "./modules/HomePage";
+import ForcedPasswordChange from "./modules/ForcedPasswordChange";
 
 const Stack = createStackNavigator();
 const routers = [
@@ -38,6 +39,12 @@ const routers = [
     name: "HomePage",
     component: HomePage,
     type: TransitionPresets.ScaleFromCenterAndroid
+  },
+  {
+    title: "强制修改密码",
+    name: "ForcedPasswordChange",
+    component: ForcedPasswordChange,
+    type: TransitionPresets.SlideFromRightIOS
   }
 ];
 const Router = () => {

@@ -4,6 +4,8 @@ import UserButton from "../../../../components/UserButton";
 import { ActionSheet } from "@ant-design/react-native";
 import { connect } from "react-redux";
 import config from "../../../../config";
+import { clearAllCookie } from "../../../../assets/cookie";
+import { data } from "../../../../store/dataSource";
 
 const User = props => {
   const changeTitle = (title) => {
@@ -50,7 +52,14 @@ const User = props => {
     );
   };
   const clearDataAndSignOut = () => {
-    props.navigation.navigate("Login");
+    clearAllCookie();//清空cookie
+    //重置数据源
+    props.dispatch(dispatch => {
+      dispatch({ type: "TITLE", payload: { ...data.titles } });
+      dispatch({ type: "USER", payload: { ...data.userMessage } });
+      dispatch({ type: "AREA", payload: { ...data.ares } });
+    });
+    props.navigation.navigate("Login");//跳转到登录页
   };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>

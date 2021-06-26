@@ -37,7 +37,7 @@ const Title = (props) => {
           elevation: 2,
           width: "20%",
         }}>
-          {props.titleLeft}
+          {props.titleLeft ? props.titleLeft : null}
         </TouchableOpacity>
         <View style={{
           justifyContent: "center",

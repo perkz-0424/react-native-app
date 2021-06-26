@@ -1,26 +1,26 @@
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  View, Dimensions, Image, TextInput,
-  TouchableWithoutFeedback, TouchableOpacity,
-  Text, StyleSheet, BackHandler,
-} from "react-native";
+import { View, Dimensions, Image, Text, StyleSheet, BackHandler, } from "react-native";
 import { Button } from "@ant-design/react-native";
 import Title from "../../components/Title";
 import api from "../../servers/Login";
 import SDHPicker from "../../components/SDHPicker/index";
+import { Password, Normal, PhoneVerificationCode, ImageVerificationCode } from "../../components/Input/index";
 
 const ForgetPwd = props => {
   const [phoneOrMail, set_phoneOrMail] = useState("");
+  const [imageCode, set_imageCode] = useState("");//图形码
+  const [phoneOrMailCode, set_phoneOrMailCode] = useState("");//手机或邮箱验证码
+  const [password, set_password] = useState("");//密码
   const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,123");//图形验证码的图
   const [code, set_code] = useState("");//图形验证码的值
-  const [codeTitle, set_codeTitle] = useState("获取验证码");
   const [buttonTitle, set_buttonTitle] = useState("下一步");
   const [buttonDisabled, set_buttonDisabled] = useState(true);
   const [pickerData, set_pickerData] = useState([]); //[{ label: "XXX", value: "XXX" }]
   const [user, set_user] = useState([""]);
   const [ID, set_ID] = useState("");
   const [mail, set_mail] = useState("");
-  const [secure, set_secure] = useState(true);
+  const [start, set_start] = useState(false);//是否开始计时
+  let [times, set_times] = useState(60);//计时时间
   const onBackPress = () => {
     props.navigation.goBack();
     return true;
@@ -33,6 +33,80 @@ const ForgetPwd = props => {
   };
   const phoneOrMailChange = value => {
     set_phoneOrMail(value);
+  };
+
+  const imageCodeChange = value => {
+    set_imageCode(value);
+  };
+
+  const phoneOrMailCodeChange = value => {
+    set_phoneOrMailCode(value);
+  };
+
+  const IDChange = value => {
+    set_ID(value);
+  };
+
+  const mailChange = value => {
+    set_mail(value);
+  };
+
+  const passwordChange = value => {
+    set_password(value);
+  };
+
+  const sendVerification = () => {
+
+  };
+  const leftIcon = (type) => {
+    switch (type) {
+      case "phone":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 14, height: 18 }}
+              source={require("../../assets/images/SDH/phone.png")}
+            />
+          </View>
+        );
+      case "code":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 16, height: 19 }}
+              source={require("../../assets/images/SDH/code.png")}
+            />
+          </View>
+        );
+      case "id":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 17, height: 14 }}
+              source={require("../../assets/images/SDH/id.png")}
+            />
+          </View>
+        );
+      case "mail":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 18, height: 14 }}
+              source={require("../../assets/images/SDH/mailIcon.png")}
+            />
+          </View>
+        );
+      case "password":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 15.5, height: 18, marginLeft: 1 }}
+              source={require("../../assets/images/SDH/password.png")}
+            />
+          </View>
+        );
+      default:
+    }
   };
   useMemo(() => {
     BackHandler.addEventListener("hardwareBackPress", onBackPress);
@@ -51,87 +125,36 @@ const ForgetPwd = props => {
         onLeftPress={onBackPress}
         titleLeft={<Image style={{ width: 12, height: 18 }} source={require("../../assets/images/icon/back.png")}/>}
       />
-      <View style={{
-        width: "100%",
-      }}>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 14, height: 18 }}
-                source={require("../../assets/images/SDH/phone.png")}
-              />
-            </View>
-            <TextInput
-              onChange={phoneOrMailChange}
-              style={styles.inputText}
-              placeholder="请输入电信手机号或邮箱"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-              value={phoneOrMail}
-            />
-          </View>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 16, height: 19 }}
-                source={require("../../assets/images/SDH/code.png")}
-              />
-            </View>
-            <TextInput
-              maxLength={4}
-              style={styles.inputText}
-              placeholder="请输入验证码"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-            />
-          </View>
-          <TouchableWithoutFeedback style={{ justifyContent: "center" }} onPress={getImageCode}>
-            <View style={{ justifyContent: "center", marginRight: 5 }}>
-              <Image
-                style={{ width: 80, height: 20 }}
-                source={{ uri: imageSource }}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 16, height: 19 }}
-                source={require("../../assets/images/SDH/code.png")}
-              />
-            </View>
-            <TextInput
-              maxLength={6}
-              style={styles.inputText}
-              placeholder="请输入手机或邮箱验证码"
-              clear
-              autoCapitalize="none"
-              keyboardType="numeric"
-            />
-          </View>
-          <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {}}>
-            <View style={{ justifyContent: "center", marginRight: 5 }}>
-              <View style={styles.line}>
-                <Text style={{ fontSize: 10, color: "#1D9AFF" }}>{codeTitle}</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
+      <View style={{ width: "100%" }}>
+        <Normal
+          leftImage={leftIcon("phone")}
+          onChangeText={phoneOrMailChange}
+          placeholder="请输入电信手机号或邮箱"
+          value={phoneOrMail}
+        />
+        <ImageVerificationCode
+          leftImage={leftIcon("code")}
+          onChangeText={imageCodeChange}
+          placeholder="请输入验证码"
+          onPress={getImageCode}
+          value={imageCode}
+          uri={imageSource}
+        />
+        <PhoneVerificationCode
+          leftImage={leftIcon("code")}
+          placeholder="请输入电信手机或邮箱验证码"
+          onChangeText={phoneOrMailCodeChange}
+          value={phoneOrMailCode}
+          onPress={sendVerification}
+          start={start}
+          title={start ? `${times}秒后重新获取` : "获取验证码"}
+        />
         <View style={{ ...styles.inputBox, ...{ borderBottomWidth: 0.3 } }}>
           <SDHPicker
             title=""
             data={pickerData}
             value={user}
-            onOk={v => {
-              set_user(v);
-            }}
+            onOk={v => {set_user(v);}}
             cols={1}
             extra="请选择用户"
           >
@@ -143,75 +166,25 @@ const ForgetPwd = props => {
             </View>
           </SDHPicker>
         </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 17, height: 14 }}
-                source={require("../../assets/images/SDH/id.png")}
-              />
-            </View>
-            <TextInput
-              onChange={() => {}}
-              maxLength={18}
-              style={styles.inputText}
-              placeholder="请输入18位身份证号码"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-              value={ID}
-            />
-          </View>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 18, height: 14 }}
-                source={require("../../assets/images/SDH/mailIcon.png")}
-              />
-            </View>
-            <TextInput
-              onChange={() => {}}
-              maxLength={30}
-              style={styles.inputText}
-              placeholder="设置邮箱账号"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-              value={mail}
-            />
-          </View>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 15.5, height: 18, marginLeft: 1 }}
-                source={require("../../assets/images/SDH/password.png")}
-              />
-            </View>
-            <TextInput
-              style={styles.inputText}
-              placeholder="输入你的密码"
-              clear
-              autoCapitalize="none"
-              secureTextEntry={secure}
-              keyboardType="default"
-            />
-          </View>
-          <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {set_secure(!secure);}}>
-            <View style={{ justifyContent: "center", marginRight: 10 }}>
-              {secure ? <Image
-                style={styles.eyes}
-                source={require("../../assets/images/SDH/closeEyes.png")}
-              /> : <Image
-                style={styles.eyes}
-                source={require("../../assets/images/SDH/openEyes.png")}
-              />}
-            </View>
-          </TouchableOpacity>
-        </View>
+        <Normal
+          maxLength={18}
+          leftImage={leftIcon("id")}
+          onChangeText={IDChange}
+          placeholder="请输入18位身份证号码"
+          value={ID}
+        />
+        <Normal
+          leftImage={leftIcon("mail")}
+          onChangeText={mailChange}
+          placeholder="设置邮箱账号"
+          value={mail}
+        />
+        <Password
+          leftImage={leftIcon("password")}
+          onChangeText={passwordChange}
+          placeholder="输入新的密码"
+          value={password}
+        />
         <View style={{ ...styles.inputBox, ...{ borderBottomWidth: 0, } }}>
           <Text style={{ fontSize: 10, marginTop: 10, color: "#BFBFBF", }}>
             密码由8-30位字母数字组成，区分大小写，必须包含特殊字符

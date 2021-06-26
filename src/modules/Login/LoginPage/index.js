@@ -1,23 +1,21 @@
 import React, { useState, useMemo, useEffect } from "react";
-import {
-  View, Alert, StyleSheet, Dimensions,
-  Image, Platform, TextInput, Text, Keyboard,
-  TouchableWithoutFeedback, TouchableOpacity,
-} from "react-native";
+import { View, Alert, StyleSheet, Dimensions, Text, Keyboard, Image, Platform, TouchableOpacity } from "react-native";
+import { Password, Normal, ImageVerificationCode, PhoneVerificationCode } from "../../../components/Input/index";
+import { connect } from "react-redux";
 import { Toast } from "@ant-design/react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 import Loading from "../../../components/Loading";
 import { encrypt } from "../../../assets/crypto";
-import { connect } from "react-redux";
+import { setCookie } from "../../../assets/cookie";
+import messages from "../../../assets/js/message";
 
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
   const [password, set_password] = useState("");//密码
   const [imageCode, set_imageCode] = useState("");//图形码
   const [phoneOrMailCode, set_phoneOrMailCode] = useState("");//手机或邮箱验证码
-  const [secure, set_secure] = useState(true);//密码对否可见
   const [imageSource, set_imageSource] = useState("data:image/jpeg;base64,111");//图形验证码的图
   const [code, set_code] = useState("");//图形验证码的值
   const [start, set_start] = useState(false);//是否开始计时
@@ -26,8 +24,8 @@ const LoginPage = props => {
   let [times, set_times] = useState(60);//计时时间
   let workForTiming = null;
   /*错误提示*/
-  const errorMessage = (err = "网络错误", info) => {
-    Toast.fail(err, 1);
+  const errorMessage = (err = "网络错误") => {
+    Toast.info(err, 1);
   };
   /*计时*/
   const startTiming = () => {
@@ -64,18 +62,11 @@ const LoginPage = props => {
       if (res.msg !== "success") {
         failSend(res.message);
       } else {
-        //成功发送，开始倒计时
-        startTiming();
+        startTiming();//成功发送，开始倒计时
       }
     }).catch(() => {
       failSend("发送失败");
     });
-  };
-  /*发送失败*/
-  const failSend = (message) => {
-    rollBackTiming();
-    getImageCode();
-    errorMessage(message);
   };
   /*登录接口调用*/
   const getOnLogin = () => {
@@ -87,37 +78,46 @@ const LoginPage = props => {
       encrypt(phoneOrMailCode),
     ).then(res => {
       set_loading(false);
-      const RD = parseInt(res["remain_days"], 10);
-      if (RD) {
+      if (res.token || res.message === "success") {
+        const RD = parseInt(res["remain_days"], 10);//距离过期还剩多少天
         set_remainDays(RD);
-        if (RD > 70 && RD <= 80) {
-          // TODO: 密码快超期（70-80）
-        } else if (RD > 80 && RD <= 90) {
-          // TODO: 密码快超期（80-90）
+        if (RD && RD > 70) {
+          if (RD > 70 && RD <= 80) {
+            // TODO: 密码快超期（70-80）
+          } else if (RD > 80 && RD <= 90) {
+            props.navigation.navigate("ForcedPasswordChange");//跳至强制修改密码
+          } else if (RD > 90) {
+            errorMessage("用户已被锁定，请联系管理员");
+          }
         } else {
-          // TODO: 密码超期（大于90天）
+          saveUserMessage(res);
         }
       } else {
-        saveUserMessage(res);
+        getImageCode();
+        errorMessage(messages[res.message]);
       }
-    }).catch(error => {
-      // TODO: 汇报登录错误
+    }).catch(() => {
+      errorMessage();
+      getImageCode();
       set_loading(false);
     });
   };
+  /*发送失败*/
+  const failSend = (message) => {
+    rollBackTiming();
+    getImageCode();
+    errorMessage(message);
+  };
   /*存储用户信息*/
   const saveUserMessage = (res) => {
-    saveToken(res.token);
+    setCookie("token", res.token);//存token
     props.dispatch(dispatch => {
-      dispatch({ type: "USERMESSAGE", payload: { ...res } });
+      dispatch({ type: "USER", payload: { message: { ...res } } });//存用户信息
     });
     set_phoneOrMailCode("");
     set_imageCode("");
-    props.navigation.navigate("HomePage");
-  };
-  /*存Token*/
-  const saveToken = (token) => {
-    // TODO: 存token
+    props.navigation.navigate("HomePage");//打开页面
+    getImageCode();
   };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
@@ -141,9 +141,7 @@ const LoginPage = props => {
   };
   /*判断图形验证码是否正确*/
   const isTrueImageCode = () => {
-    //TODO: 前端没办法解密图形验证码
-
-    //const { imageKey, imageIv } = config;
+    //TODO: 前端没办法解密图形验证码 config.imageKey、config.imageIv分别是解密的key和iv
     return true;
   };
   /*弹出错误警告*/
@@ -186,6 +184,29 @@ const LoginPage = props => {
     });
   };
 
+  const LeftIcon = (type) => {
+    switch (type) {
+      case "yonghu":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 13, height: 15 }}
+              source={require("../../../assets/images/icon/yonghu.png")}
+            />
+          </View>
+        );
+      case "mima":
+        return (
+          <View style={styles.inputTitle}>
+            <Image
+              style={{ width: 13, height: 15 }}
+              source={require("../../../assets/images/icon/mima.png")}
+            />
+          </View>
+        );
+      default:
+    }
+  };
   useMemo(() => {
     getImageCode();
   }, []);
@@ -195,7 +216,6 @@ const LoginPage = props => {
       rollBackTiming();
     };
   }, []);
-
   return (
     <View style={styles.container}>
       <Loading loading={loading} text="登入中"/>
@@ -206,100 +226,33 @@ const LoginPage = props => {
         />
       </View>
       <View style={styles.bg}>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 13, height: 15 }}
-                source={require("../../../assets/images/icon/yonghu.png")}
-              />
-            </View>
-            <TextInput
-              onChangeText={userNameChange}
-              style={styles.inputText}
-              placeholder="输入你的登录名"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-              value={userName}
-            />
-          </View>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <View style={styles.inputTitle}>
-              <Image
-                style={{ width: 13, height: 15 }}
-                source={require("../../../assets/images/icon/mima.png")}
-              />
-            </View>
-            <TextInput
-              onChangeText={passwordChange}
-              style={styles.inputText}
-              placeholder="输入你的密码"
-              clear
-              autoCapitalize="none"
-              secureTextEntry={secure}
-              keyboardType="default"
-              value={password}
-            />
-          </View>
-          <TouchableOpacity style={{ justifyContent: "center" }} onPress={() => {set_secure(!secure);}}>
-            <View style={{ justifyContent: "center", marginRight: 10 }}>
-              {secure ? <Image
-                style={styles.eyes}
-                source={require("../../../assets/images/SDH/closeEyes.png")}
-              /> : <Image
-                style={styles.eyes}
-                source={require("../../../assets/images/SDH/openEyes.png")}
-              />}
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              onChangeText={imageCodeChange}
-              style={styles.inputText}
-              placeholder="请输入验证码"
-              clear
-              autoCapitalize="none"
-              keyboardType="default"
-              value={imageCode}
-            />
-          </View>
-          <TouchableWithoutFeedback style={{ justifyContent: "center" }} onPress={getImageCode}>
-            <View style={{ justifyContent: "center", marginRight: 5 }}>
-              <Image
-                style={{ width: 80, height: 20 }}
-                source={{ uri: imageSource }}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <View style={styles.inputBox}>
-          <View style={styles.inputContainer}>
-            <TextInput
-              maxLength={15}
-              onChangeText={phoneOrMailCodeChange}
-              style={styles.inputText}
-              placeholder="请输入电信手机或邮箱验证码"
-              clear
-              autoCapitalize="none"
-              keyboardType="numeric"
-              value={phoneOrMailCode}
-            />
-          </View>
-          <TouchableOpacity style={{ justifyContent: "center" }} onPress={sendVerification}>
-            <View style={{ justifyContent: "center", marginRight: 5 }}>
-              <View style={styles.line}>
-                <Text style={{ fontSize: 10, color: start ? "#9c9c9c" : "#1D9AFF" }}>{
-                  start ? `${times}秒后重新获取` : "获取验证码"
-                }</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <Normal
+          leftImage={LeftIcon("yonghu")}
+          onChangeText={userNameChange}
+          value={userName}
+          placeholder="输入你的登录名"
+        />
+        <Password
+          leftImage={LeftIcon("mima")}
+          onChangeText={passwordChange}
+          placeholder="输入你的密码"
+          value={password}
+        />
+        <ImageVerificationCode
+          onChangeText={imageCodeChange}
+          placeholder="请输入验证码"
+          onPress={getImageCode}
+          value={imageCode}
+          uri={imageSource}
+        />
+        <PhoneVerificationCode
+          placeholder="请输入电信手机或邮箱验证码"
+          onChangeText={phoneOrMailCodeChange}
+          value={phoneOrMailCode}
+          onPress={sendVerification}
+          start={start}
+          title={start ? `${times}秒后重新获取` : "获取验证码"}
+        />
         <View style={{ ...styles.inputBox, ...{ marginTop: 15, borderBottomWidth: 0 } }}>
           <Button onPress={onLogin}>登录</Button>
         </View>
@@ -330,25 +283,6 @@ const LoginPage = props => {
   );
 };
 const styles = StyleSheet.create({
-  line: {
-    height: 20,
-    width: 80,
-    borderLeftWidth: 1,
-    borderColor: "#E5E5E5",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  eyes: {
-    marginTop: 15,
-    marginBottom: 15,
-    height: 9,
-    width: 17,
-    alignSelf: "flex-end",
-  },
-  inputContainer: {
-    borderStyle: "solid",
-    flexDirection: "row",
-  },
   inputBox: {
     borderBottomWidth: 0.2,
     borderColor: "#E5E5E5",
@@ -356,11 +290,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginLeft: 20,
     marginRight: 20,
-  },
-  inputText: {
-    height: 45,
-    marginLeft: 5,
-    paddingLeft: 5,
   },
   inputTitle: {
     marginLeft: 10,
