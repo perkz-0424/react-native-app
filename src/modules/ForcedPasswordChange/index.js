@@ -7,10 +7,11 @@ import Loading from "../../components/Loading";
 import api from "../../servers/Login";
 import { encrypt } from "../../assets/crypto";
 import regExps from "../../assets/js/regExp";
-import { Toast, Icon } from "@ant-design/react-native";
+import { Icon } from "@ant-design/react-native";
 import { clearAllCookie } from "../../assets/cookie";
 import { connect } from "react-redux";
 import { data } from "../../store/dataSource";
+import errorMessage from "../../components/errorMessage";
 
 const ForcedPasswordChange = (props) => {
   const [loading, set_loading] = useState(false);
@@ -22,10 +23,6 @@ const ForcedPasswordChange = (props) => {
   /*错误告警*/
   const alertError = (message) => {
     return Alert.alert("警告", message, [{ text: "确定" }]);
-  };
-  /*错误提示*/
-  const errorMessage = (err = "网络错误") => {
-    Toast.info(err, 1);
   };
   const oldPasswordChange = text => {
     set_oldPassword(text);
@@ -71,15 +68,18 @@ const ForcedPasswordChange = (props) => {
     tempTime && clearTimeout(tempTime);
     tempTime = setTimeout(() => {
       props.navigation.navigate("Login");
-      props.dispatch(dispatch => {
-        dispatch({ type: "TOKEN", payload: { ...data.token } });
-      });
       rollBack();
     }, 1500);
   };
 
   /*清空*/
   const rollBack = () => {
+    props.dispatch(dispatch => {
+      dispatch({
+        type: "TOKEN",
+        payload: { ...data.token }
+      });
+    });
     set_loading(false);
     set_success(false);
     set_oldPassword("");

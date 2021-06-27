@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { View, Alert, StyleSheet, Dimensions, Text, Keyboard, Image, Platform, TouchableOpacity } from "react-native";
 import { Password, Normal, ImageVerificationCode, PhoneVerificationCode } from "../../../components/Input/index";
 import { connect } from "react-redux";
-import { Toast, Icon } from "@ant-design/react-native";
+import { Icon } from "@ant-design/react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
@@ -10,6 +10,7 @@ import Loading from "../../../components/Loading";
 import { encrypt } from "../../../assets/crypto";
 import { setCookie } from "../../../assets/cookie";
 import messages from "../../../assets/js/message";
+import errorMessage from "../../../components/errorMessage";
 
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
@@ -24,10 +25,6 @@ const LoginPage = props => {
   let [times, set_times] = useState(60);//计时时间
   const token = props.state.token.value;
   let workForTiming = null;
-  /*错误提示*/
-  const errorMessage = (err = "网络错误") => {
-    Toast.info(err, 1);
-  };
   /*计时*/
   const startTiming = () => {
     workForTiming && rollBackTiming();

@@ -13,6 +13,20 @@ const level = [
   },
   {
     category: "city",
+    name: "宁波市",
+    parents: {
+      province: "浙江省"
+    },
+  },
+  {
+    category: "city",
+    name: "温州市",
+    parents: {
+      province: "浙江省"
+    },
+  },
+  {
+    category: "city",
     name: "湖州市",
     parents: {
       province: "浙江省"
@@ -48,21 +62,7 @@ const level = [
   },
   {
     category: "city",
-    name: "宁波市",
-    parents: {
-      province: "浙江省"
-    },
-  },
-  {
-    category: "city",
     name: "台州市",
-    parents: {
-      province: "浙江省"
-    },
-  },
-  {
-    category: "city",
-    name: "温州市",
     parents: {
       province: "浙江省"
     },
