@@ -5,6 +5,7 @@ import Title from "../../components/Title";
 import api from "../../servers/Login";
 import SDHPicker from "../../components/SDHPicker/index";
 import { Password, Normal, PhoneVerificationCode, ImageVerificationCode } from "../../components/Input/index";
+import { connect } from "react-redux";
 
 const ForgetPwd = props => {
   const [phoneOrMail, set_phoneOrMail] = useState("");
@@ -133,6 +134,7 @@ const ForgetPwd = props => {
           value={phoneOrMail}
         />
         <ImageVerificationCode
+          maxLength={4}
           leftImage={leftIcon("code")}
           onChangeText={imageCodeChange}
           placeholder="请输入验证码"
@@ -141,6 +143,7 @@ const ForgetPwd = props => {
           uri={imageSource}
         />
         <PhoneVerificationCode
+          maxLength={15}
           leftImage={leftIcon("code")}
           placeholder="请输入电信手机或邮箱验证码"
           onChangeText={phoneOrMailCodeChange}
@@ -264,4 +267,4 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-export default ForgetPwd;
+export default connect(state => ({ state }))(ForgetPwd);

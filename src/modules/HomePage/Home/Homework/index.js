@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import { connect } from "react-redux";
 
 const Homework = props => {
   return (
@@ -9,4 +10,4 @@ const Homework = props => {
   );
 };
 
-export default Homework;
+export default connect(state => ({ state }))(Homework);

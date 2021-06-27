@@ -58,6 +58,7 @@ const User = props => {
       dispatch({ type: "TITLE", payload: { ...data.titles } });
       dispatch({ type: "USER", payload: { ...data.userMessage } });
       dispatch({ type: "AREA", payload: { ...data.ares } });
+      dispatch({ type: "TOKEN", payload: { ...data.token } });
     });
     props.navigation.navigate("Login");//跳转到登录页
   };

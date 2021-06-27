@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { View, Alert, StyleSheet, Dimensions, Text, Keyboard, Image, Platform, TouchableOpacity } from "react-native";
 import { Password, Normal, ImageVerificationCode, PhoneVerificationCode } from "../../../components/Input/index";
 import { connect } from "react-redux";
-import { Toast } from "@ant-design/react-native";
+import { Toast, Icon } from "@ant-design/react-native";
 import config from "../../../config";
 import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
@@ -22,6 +22,7 @@ const LoginPage = props => {
   const [loading, set_loading] = useState(false);
   const [remainDays, set_remainDays] = useState(0);
   let [times, set_times] = useState(60);//计时时间
+  const token = props.state.token.value;
   let workForTiming = null;
   /*错误提示*/
   const errorMessage = (err = "网络错误") => {
@@ -56,7 +57,7 @@ const LoginPage = props => {
     api.sendPhoneOrMailVerificationCode(
       encrypt(userName),
       encrypt(password),
-      imageCode,
+      imageCode.toUpperCase(),
       "mail", // TODO: 等后端改完接口删除mail，这样手机和邮箱都发送
     ).then(res => {
       if (res.msg !== "success") {
@@ -64,28 +65,33 @@ const LoginPage = props => {
       } else {
         startTiming();//成功发送，开始倒计时
       }
-    }).catch(() => {
-      failSend("发送失败");
-    });
+    }).catch(() => {failSend("发送失败");});
   };
   /*登录接口调用*/
   const getOnLogin = () => {
     set_loading(true);
-    api.getLogin(
+    api.onLogin(
       encrypt(userName),
       encrypt(password),
-      imageCode,
+      imageCode.toUpperCase(),
       encrypt(phoneOrMailCode),
     ).then(res => {
       set_loading(false);
       if (res.token || res.message === "success") {
         const RD = parseInt(res["remain_days"], 10);//距离过期还剩多少天
         set_remainDays(RD);
+        props.dispatch(dispatch => {
+          dispatch({ type: "TOKEN", payload: { value: res.token } });
+        });
         if (RD && RD > 70) {
           if (RD > 70 && RD <= 80) {
             // TODO: 密码快超期（70-80）
           } else if (RD > 80 && RD <= 90) {
+            setCookie("temp_token", res.token);//存临时的token用于重置密码
             props.navigation.navigate("ForcedPasswordChange");//跳至强制修改密码
+            set_password("");
+            set_phoneOrMailCode("");
+            set_imageCode("");
           } else if (RD > 90) {
             errorMessage("用户已被锁定，请联系管理员");
           }
@@ -111,9 +117,6 @@ const LoginPage = props => {
   /*存储用户信息*/
   const saveUserMessage = (res) => {
     setCookie("token", res.token);//存token
-    props.dispatch(dispatch => {
-      dispatch({ type: "USER", payload: { message: { ...res } } });//存用户信息
-    });
     set_phoneOrMailCode("");
     set_imageCode("");
     props.navigation.navigate("HomePage");//打开页面
@@ -177,6 +180,7 @@ const LoginPage = props => {
   };
   /*登录*/
   const onLogin = () => {
+    // return props.navigation.navigate("HomePage");//打开页面 TODO: 直接进入页面
     const condition = !userName || !password || !imageCode || !phoneOrMailCode;
     const message = "请输入登录名、密码、图形验证码和手机或邮箱验证码";
     ready(condition, message, getOnLogin).then(() => {
@@ -189,19 +193,13 @@ const LoginPage = props => {
       case "yonghu":
         return (
           <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 13, height: 15 }}
-              source={require("../../../assets/images/icon/yonghu.png")}
-            />
+            <Icon name="user" size="md" color="#9c9c9c"/>
           </View>
         );
       case "mima":
         return (
           <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 13, height: 15 }}
-              source={require("../../../assets/images/icon/mima.png")}
-            />
+            <Icon name="lock" size="md" color="#9c9c9c"/>
           </View>
         );
       default:
@@ -209,7 +207,7 @@ const LoginPage = props => {
   };
   useMemo(() => {
     getImageCode();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     return () => {
@@ -239,6 +237,7 @@ const LoginPage = props => {
           value={password}
         />
         <ImageVerificationCode
+          maxLength={4}
           onChangeText={imageCodeChange}
           placeholder="请输入验证码"
           onPress={getImageCode}
@@ -246,6 +245,7 @@ const LoginPage = props => {
           uri={imageSource}
         />
         <PhoneVerificationCode
+          maxLength={15}
           placeholder="请输入电信手机或邮箱验证码"
           onChangeText={phoneOrMailCodeChange}
           value={phoneOrMailCode}
@@ -295,6 +295,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: "center",
     width: 20,
+    alignItems: "center"
   },
   container: {
     width: "100%",

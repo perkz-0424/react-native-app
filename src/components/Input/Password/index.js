@@ -11,6 +11,7 @@ const Password = (props) => {
       <View style={styles.inputContainer}>
         {props.leftImage ? props.leftImage : null}
         <TextInput
+          maxLength={props.maxLength ? props.maxLength : null}
           onChangeText={onChange}
           style={styles.inputText}
           placeholder={props.placeholder}

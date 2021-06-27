@@ -20,15 +20,14 @@ const data = {
     index: 0
   },
   titles: { title: "告警列表" },
-  userMessage: { message: {} }
+  userMessage: { message: {} },
+  token: { value: "" }
 };
 const dataSource = {
-  /*地域数据*/
-  areas: createDataSource("AREA", { ...data.ares }),
-  /*Title的组件的title值*/
-  titles: createDataSource("TITLE", { ...data.titles }),
-  /*用户信息*/
-  userMessage: createDataSource("USER", { ...data.userMessage }),
+  areas: createDataSource("AREA", { ...data.ares }),//地域数据
+  titles: createDataSource("TITLE", { ...data.titles }),//Title的组件的title值
+  userMessage: createDataSource("USER", { ...data.userMessage }),//用户信息
+  token: createDataSource("TOKEN", { ...data.token }),//token
 };
 
 export { createDataSource, data };

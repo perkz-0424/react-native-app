@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text } from "react-native";
+import { connect } from "react-redux";
 
 const Moint = props => {
   return (
@@ -9,4 +10,4 @@ const Moint = props => {
   );
 };
 
-export default Moint;
+export default connect(state => ({ state }))(Moint);

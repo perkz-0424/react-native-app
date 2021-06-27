@@ -13,7 +13,7 @@ const ImageVerificationCode = (props) => {
       <View style={styles.inputContainer}>
         {props.leftImage ? props.leftImage : null}
         <TextInput
-          maxLength={4}
+          maxLength={props.maxLength ? props.maxLength : null}
           onChangeText={onChange}
           style={styles.inputText}
           placeholder={props.placeholder}
