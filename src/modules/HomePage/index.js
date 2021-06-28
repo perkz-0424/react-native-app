@@ -8,6 +8,7 @@ import Area from "./Area";
 import MyMessage from "./MyMessage";
 import EngineeringManagement from "./EngineeringManagement";
 import AboutUs from "./AboutUs";
+import { abort } from "../../servers/Area";
 
 const Stack = createStackNavigator();
 const titles = [
@@ -60,6 +61,9 @@ const HomePage = (props) => {
   /*title左边的地域或者返回按钮*/
   const onAreaOrBack = () => {
     if (titles[0].includes(title)) {
+      abort.abortCityWarningCounts && abort.abortCityWarningCounts();
+      abort.abortTownWarningCounts && abort.abortTownWarningCounts();
+      abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
       changeTitle(backTitle);
       return props.navigation.navigate("Home");
     } else if (titles[1].includes(title)) {

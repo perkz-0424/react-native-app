@@ -16,9 +16,11 @@ const SelectProvince = (props) => {
       areas[0].name = province;
       delete areas[1].name;
       delete areas[1].info;
+      delete areas[1].chlidren;
       delete areas[2].name;
       delete areas[2].info;
       delete areas[2].netType;
+      delete areas[2].chlidren;
       delete areas[3].name;
       delete areas[3].info;
       props.dispatch(dispatch => {

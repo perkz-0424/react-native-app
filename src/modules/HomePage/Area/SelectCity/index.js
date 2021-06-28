@@ -8,9 +8,11 @@ import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
+  const province_children = props.area.filter(v => v.level === "province")[0].chlidren;
+  const initCityWarningCounts = province_children ? province_children : [];
   const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
-  const [cityWarningCounts, set_cityWarningCounts] = useState([]);//告警数量
+  const [cityWarningCounts, set_cityWarningCounts] = useState(initCityWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
   //点击切换城市
   const changeCity = (item) => {
@@ -25,8 +27,10 @@ const SelectCity = (props) => {
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
+        delete areas[2].chlidren;
         delete areas[1].name;
         delete areas[1].info;
+        delete areas[1].chlidren;
         areaDispatch("province", 0, areas, province, 1, item);//更改为省级
         props.dispatch(dispatch => {
           dispatch({
@@ -44,6 +48,7 @@ const SelectCity = (props) => {
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
+        delete areas[2].chlidren;
         delete areas[3].name;
         delete areas[3].info;
         areaDispatch("city", 1, areas, checkCity, 2, item);//更改为城市级
@@ -69,11 +74,18 @@ const SelectCity = (props) => {
   //获取城市告警数
   const getCityWarningCounts = () => {
     set_refreshing(true);
+    const areas = [...props.state.areas.data]; //地市信息
     api.getCityWarningCounts("province").then(res => {
+      areas[0].chlidren = res;
       set_cityWarningCounts(res);
+      props.dispatch(dispatch => {
+        dispatch({ type: "AREA", payload: { data: areas } });
+      });
       set_refreshing(false);
-    }).catch(() => {
-      errorMessage("获取数据失败");
+    }).catch((error) => {
+      if (error.toString() !== "AbortError: Aborted") {
+        errorMessage("获取数据失败");
+      }
       set_refreshing(false);
     });
   };
@@ -123,7 +135,9 @@ const SelectCity = (props) => {
   }, []);
 
   useMemo(() => {
-    getCityWarningCounts();
+    if (province) {
+      getCityWarningCounts();
+    }
   }, [province]);
   return (
     <View style={{ width: "100%", flex: 1 }}>

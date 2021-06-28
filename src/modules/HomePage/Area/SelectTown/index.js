@@ -8,11 +8,13 @@ import errorMessage from "../../../../components/errorMessage";
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
+  const city_children = props.area.filter(v => v.level === "city")[0].chlidren;//该城市下有的区县
+  const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
   const town = props.area.filter(v => v.level === "town")[0].name;//选中的区县名称
   const netType = props.area.filter(v => v.level === "town")[0].netType;//选中的区县网络类型
   const netTypeInit = netType ? netType : 0;//初始化的网络类型在哪页
-  const [townWarningCounts, set_townWarningCounts] = useState([]);//告警数量
+  const [townWarningCounts, set_townWarningCounts] = useState(initTownWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
   const tabs = [{ name: "固网", netType: 0 }, { name: "无线网", netType: 1 }];//固网无线网选项
   const [netTypeIndex, set_netTypeIndex] = useState(netTypeInit);//固网无线网序号
@@ -28,12 +30,19 @@ const SelectTown = (props) => {
   //获取数据
   const getTownsInfo = () => {
     set_refreshing(true);
+    const areas = [...props.state.areas.data]; //地市信息
     api.getTownWarningCounts("city", city).then(res => {
-      set_refreshing(false);
+      areas[1].chlidren = res;
       set_townWarningCounts(res);
-    }).catch(() => {
+      props.dispatch(dispatch => {
+        dispatch({ type: "AREA", payload: { data: areas } });
+      });
       set_refreshing(false);
-      errorMessage("获取数据失败");
+    }).catch((error) => {
+      if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
+        errorMessage("获取数据失败");
+      }
+      set_refreshing(false);
     });
   };
   //改变或选择区县
@@ -48,6 +57,7 @@ const SelectTown = (props) => {
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
+        delete areas[2].chlidren;
         areaDispatch("city", 1, areas, city, 2, item);//更改为市级
         props.dispatch(dispatch => {
           dispatch({
@@ -137,7 +147,9 @@ const SelectTown = (props) => {
     );
   };
   useEffect(() => {
-    getTownsInfo();
+    if (city) {
+      getTownsInfo();
+    }
     return () => {
       abort.abortTownWarningCounts && abort.abortTownWarningCounts();
     };
