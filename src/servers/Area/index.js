@@ -3,6 +3,7 @@ import request from "../../fetch";
 const abort = {
   abortCityWarningCounts: null,
   abortTownWarningCounts: null,
+  abortStationByAIDAndNetType: null,
 };
 const api = {
   //获取告警数量
@@ -15,13 +16,16 @@ const api = {
   getTownWarningCounts: (level, cityName) => {
     abort.abortTownWarningCounts && abort.abortTownWarningCounts();
     const controller = new AbortController();
-    abort.abortCityWarningCounts = () => controller.abort();
+    abort.abortTownWarningCounts = () => controller.abort();
     return request("GET", `/warning_count/warning_count_by_area?level=${level}&area_name=${cityName}`, {}, controller.signal);
+  },
+  getStationByAIDAndNetType: (AID, netType) => {
+    abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
+    const controller = new AbortController();
+    abort.abortStationByAIDAndNetType = () => controller.abort();
+    return request("GET", `/monitoring_manage/get_stations?AID=${AID}&net_type=${netType}`, {}, controller.signal);
   }
 };
-
+export { abort };
 export default api;
-
-
-
 

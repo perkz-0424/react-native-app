@@ -55,8 +55,8 @@ const LoginPage = props => {
     api.sendPhoneOrMailVerificationCode(
       encrypt(userName),
       encrypt(password),
-      imageCode.toUpperCase(),
-      "mail", // TODO: 等后端改完接口删除mail，这样手机和邮箱都发送
+      imageCode.toUpperCase()
+      //没有method短信和邮箱都发送
     ).then(res => {
       if (res.msg !== "success") {
         failSend(res.message);
@@ -78,22 +78,23 @@ const LoginPage = props => {
       if (res.token || res.message === "success") {
         const RD = parseInt(res["remain_days"], 10);//距离过期还剩多少天
         set_remainDays(RD);
-        props.dispatch(dispatch => {
-          dispatch({ type: "TOKEN", payload: { value: res.token } });
-        });
-        if (RD && RD > 70) {
-          if (RD > 70 && RD <= 80) {
-            // TODO: 密码快超期（70-80）
-          } else if (RD > 80 && RD <= 90) {
+        if (RD) {
+          if (RD > 10 && RD <= 20) {
+            // TODO: 密码快超期（10-20）
+          } else if (RD > 0 && RD <= 10) {
             setCookie("temp_token", res.token);//存临时的token用于重置密码
             props.navigation.navigate("ForcedPasswordChange");//跳至强制修改密码
             set_password("");
             set_phoneOrMailCode("");
             set_imageCode("");
-          } else if (RD > 90) {
+          } else if (RD === -1) {
             errorMessage("用户已被锁定，请联系管理员");
+            getImageCode();
           }
         } else {
+          props.dispatch(dispatch => {
+            dispatch({ type: "TOKEN", payload: { value: res.token } });
+          });
           saveUserMessage(res);
         }
       } else {
@@ -113,11 +114,11 @@ const LoginPage = props => {
     errorMessage(message);
   };
   /*存储用户信息*/
-  const saveUserMessage = async (res) => {
+  const saveUserMessage = (res) => {
     props.dispatch(dispatch => {
       dispatch({ type: "USER", payload: { message: { ...res } } });
     });
-    await setCookie("token", res.token);//存token
+    setCookie("token", res.token);//存token
     props.navigation.navigate("HomePage");//打开页面
     set_phoneOrMailCode("");
     set_imageCode("");
@@ -214,7 +215,6 @@ const LoginPage = props => {
       dispatch({ type: "AREA", payload: { ...data.ares } });
       dispatch({ type: "TOKEN", payload: { ...data.token } });
     });
-
   };
   useMemo(() => {
     getImageCode();

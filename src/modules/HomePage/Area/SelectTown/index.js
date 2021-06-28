@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
 import { connect } from "react-redux";
-import api from "../../../../servers/Area/index";
+import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
@@ -36,7 +36,6 @@ const SelectTown = (props) => {
       errorMessage("获取数据失败");
     });
   };
-
   //改变或选择区县
   const changeTown = (item) => {
     const checkTown = item.item.name; //选中的区县
@@ -69,7 +68,6 @@ const SelectTown = (props) => {
       }
     }
   };
-
   //区域变更
   const areaDispatch = (level, index, areas, name, page, item) => {
     props.dispatch(dispatch => {
@@ -83,7 +81,7 @@ const SelectTown = (props) => {
         style={{
           justifyContent: "center",
           width: "100%",
-          backgroundColor: item.item.name === city ? "#f1f0f0" : "#fff"
+          backgroundColor: item.item.name === town && item.item["NETTYPE"] ? "#f1f0f0" : "#fff"
         }}
         key={item.index}
         checked={item.item.name === town && item.item["NETTYPE"] === netType}
@@ -138,8 +136,11 @@ const SelectTown = (props) => {
       </View>
     );
   };
-  useMemo(() => {
+  useEffect(() => {
     getTownsInfo();
+    return () => {
+      abort.abortTownWarningCounts && abort.abortTownWarningCounts();
+    };
   }, [city]);
   return (
     <View style={{ width: "100%", flex: 1 }}>

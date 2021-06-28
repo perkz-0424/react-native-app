@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
 import { connect } from "react-redux";
-import api from "../../../../servers/Area/index";
+import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
@@ -78,9 +78,6 @@ const SelectCity = (props) => {
     });
   };
 
-  useMemo(() => {
-    getCityWarningCounts();
-  }, [province]);
   const renderCityRow = (item) => {
     return (
       <RadioItem
@@ -118,6 +115,16 @@ const SelectCity = (props) => {
       </View>
     );
   };
+
+  useEffect(() => {
+    return () => {
+      abort.abortCityWarningCounts && abort.abortCityWarningCounts();
+    };
+  }, []);
+
+  useMemo(() => {
+    getCityWarningCounts();
+  }, [province]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <FlatList

@@ -1,4 +1,3 @@
-import request from "../../fetch";
 import config from "../../config";
 import { getCookie } from "../../assets/cookie";
 
@@ -12,8 +11,8 @@ const api = {
       }).then(res => {res.json().then(resolve).catch(reject);}).catch(reject);
     });
   },
-  //发送验证码
-  sendPhoneOrMailVerificationCode: (userName, password, code, method) => {
+  //发送验证码（手机和验证码都发）
+  sendPhoneOrMailVerificationCode: (userName, password, code) => {
     return new Promise((resolve, reject) => {
       fetch(`${config.Url}/user/get_login_verify`, {
         method: "POST",
@@ -25,7 +24,6 @@ const api = {
           email: userName,
           password,
           code,
-          method,
         }),
       }).then(res => {res.json().then(resolve).catch(reject);}).catch(reject);
     });
