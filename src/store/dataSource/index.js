@@ -15,7 +15,8 @@ const data = {
       { level: "province", name: "浙江省" },
       { level: "city" },
       { level: "town" },
-      { level: "station" }],
+      { level: "station" }
+    ],
     level: "province",
     index: 0
   },

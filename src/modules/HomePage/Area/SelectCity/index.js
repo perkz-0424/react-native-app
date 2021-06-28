@@ -8,10 +8,10 @@ import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
-  const province = props.area.filter(v => v.level === "province")[0].name;
-  const city = props.area.filter(v => v.level === "city")[0].name;
-  const [cityWarningCounts, set_cityWarningCounts] = useState([]);
-  const [refreshing, set_refreshing] = useState(false);
+  const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
+  const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
+  const [cityWarningCounts, set_cityWarningCounts] = useState([]);//告警数量
+  const [refreshing, set_refreshing] = useState(false);//是否刷新
   //点击切换城市
   const changeCity = (item) => {
     const checkCity = item.item.name; //选中的市级
@@ -19,31 +19,45 @@ const SelectCity = (props) => {
     const nowCity = areas[1].name; //现在所在的市级
     if (checkCity === "选择全部") {
       if (nowCity) {
+        //删除省级以下
         delete areas[3].name;
+        delete areas[3].info;
         delete areas[2].name;
+        delete areas[2].info;
+        delete areas[2].netType;
         delete areas[1].name;
-        dispatch("province", 0, areas, province, 1);
+        delete areas[1].info;
+        areaDispatch("province", 0, areas, province, 1, item);//更改为省级
+        props.dispatch(dispatch => {
+          dispatch({
+            type: "TITLE",
+            payload: { title: props.from ? props.from : "告警列表" }
+          });
+        });//改变路由title
+        props.navigation.goBack();//返回到上一页
       }
     } else {
       if (checkCity !== nowCity) {
         areas[1].name = checkCity;
+        areas[1].info = item;
+        //删除市级以下
         delete areas[2].name;
+        delete areas[2].info;
+        delete areas[2].netType;
         delete areas[3].name;
-        dispatch("city", 1, areas, checkCity, 2);
+        delete areas[3].info;
+        areaDispatch("city", 1, areas, checkCity, 2, item);//更改为城市级
       }
     }
   };
   //区域变更
-  const dispatch = (level, index, areas, name, page) => {
+  const areaDispatch = (level, index, areas, name, page, item) => {
     props.dispatch(dispatch => {
-      dispatch({
-        type: "AREA",
-        payload: { data: areas, level, index, }
-      });
+      dispatch({ type: "AREA", payload: { data: areas, level, index } });
     });
-    props.changeArea({ level, name, page });
+    props.changeArea({ level, name, page, item });
   };
-  //城市数据
+  //获取城市数据
   const getCities = () => {
     const cities = level.city.filter(v => v.parents.province === province);//拿到本地地市数据表里的数据
     const citiesInfo = cityWarningCounts.map((cityInfo => {
@@ -66,7 +80,7 @@ const SelectCity = (props) => {
 
   useMemo(() => {
     getCityWarningCounts();
-  }, []);
+  }, [province]);
   const renderCityRow = (item) => {
     return (
       <RadioItem
@@ -82,20 +96,16 @@ const SelectCity = (props) => {
         <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <View style={{ justifyContent: "center", flexDirection: "row" }}>
             <Text style={{ fontSize: 14 }}>{item.item.name}</Text>
-            {
-              item.item.name !== "选择全部" && item.item["eng_status"] !== undefined && item.item["eng_status"] !== 0 ?
-                <Image
-                  source={require("../../../../assets/images/icon/status_icon_monit_def.png")}
-                  style={{ marginLeft: 5, height: 14, width: 14 }}
-                /> : null
-            }
+            {item.item.name !== "选择全部" && item.item["eng_status"] !== undefined && item.item["eng_status"] !== 0 ?
+              <Image
+                source={require("../../../../assets/images/icon/status_icon_monit_def.png")}
+                style={{ marginLeft: 5, height: 14, width: 14 }}
+              /> : null}
           </View>
-          {
-            item.item.name === "选择全部" ? null :
-              <View style={{ width: 60, alignItems: "center", justifyContent: "center" }}>
-                <Text style={{ fontSize: 14, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
-              </View>
-          }
+          {item.item.name === "选择全部" ? null :
+            <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ fontSize: 14, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
+            </View>}
         </View>
       </RadioItem>
     );
@@ -103,12 +113,8 @@ const SelectCity = (props) => {
   const renderHeader = () => {
     return (
       <View style={styles.title}>
-        <Text style={styles.fontStyle}>
-          地区名称
-        </Text>
-        <Text style={styles.fontStyle}>
-          告警数量
-        </Text>
+        <Text style={styles.fontStyle}>地区名称</Text>
+        <Text style={styles.fontStyle}>告警数量</Text>
       </View>
     );
   };

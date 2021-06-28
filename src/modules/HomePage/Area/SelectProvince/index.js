@@ -15,8 +15,12 @@ const SelectProvince = (props) => {
       //省级改变，市级、区级、局站级都重置
       areas[0].name = province;
       delete areas[1].name;
+      delete areas[1].info;
       delete areas[2].name;
+      delete areas[2].info;
+      delete areas[2].netType;
       delete areas[3].name;
+      delete areas[3].info;
       props.dispatch(dispatch => {
         dispatch({ type: "AREA", payload: { data: areas, level: "province", index: 0 } });
       });

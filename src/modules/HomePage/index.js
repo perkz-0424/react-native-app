@@ -49,18 +49,13 @@ const routers = [
   }
 ];
 const HomePage = (props) => {
-  const title = props.state.titles.title;
   const area = props.state.areas.data;
   const level = props.state.areas.level;
+  const title = props.state.titles.title;
   const [backTitle, set_backTitle] = useState("告警列表");
   const setArea = () => area.filter(v => v.level === level)[0].name;
   const changeTitle = (title) => {
-    props.dispatch(dispatch => {
-      dispatch({
-        type: "TITLE",
-        payload: { title }
-      });
-    });
+    props.dispatch(dispatch => {dispatch({ type: "TITLE", payload: { title } });});
   };
   /*title左边的地域或者返回按钮*/
   const onAreaOrBack = () => {
@@ -73,8 +68,33 @@ const HomePage = (props) => {
     } else if (titles[2].includes(title)) {
       set_backTitle(title);
       changeTitle("区域选择");
-      return props.navigation.navigate("Area");
+      return props.navigation.navigate("Area", {
+        fromRouteName: title,//来自哪个页面
+      });
     }
+  };
+
+  const leftIcon = () => {
+    return (
+      <View style={{ display: title === "个人中心" ? "none" : "flex" }}>
+        {["区域选择", "消息", "工程态列表", "关于我们"].includes(title) ?
+          <Image
+            style={{ width: 12, height: 18 }}
+            source={require("../../assets/images/icon/back.png")}
+          /> :
+          <View style={{ flexDirection: "row" }}>
+            <Text style={{ fontWeight: "300", fontSize: 12, }} numberOfLines={1} ellipsizeMode="tail">
+              {setArea()}
+            </Text>
+            <View style={{ justifyContent: "center", alignItems: "center", marginLeft: 8 }}>
+              <Image
+                style={{ width: 10, height: 5 }}
+                source={require("../../assets/images/icon/open_up.png")}
+              />
+            </View>
+          </View>}
+      </View>
+    );
   };
 
   return (
@@ -83,28 +103,7 @@ const HomePage = (props) => {
       <Title
         title={title === "个人中心" ? "" : props.state.titles.title}
         onLeftPress={onAreaOrBack}
-        titleLeft={
-          <View style={{ display: title === "个人中心" ? "none" : "flex" }}>
-            {
-              ["区域选择", "消息", "工程态列表", "关于我们"].includes(title) ?
-                <Image
-                  style={{ width: 12, height: 18 }}
-                  source={require("../../assets/images/icon/back.png")}
-                /> :
-                <View style={{ flexDirection: "row" }}>
-                  <Text style={{ fontWeight: "300", fontSize: 12 }}>
-                    {setArea()}
-                  </Text>
-                  <View style={{ justifyContent: "center", alignItems: "center", marginLeft: 8 }}>
-                    <Image
-                      style={{ width: 10, height: 5 }}
-                      source={require("../../assets/images/icon/open_up.png")}
-                    />
-                  </View>
-                </View>
-            }
-          </View>
-        }
+        titleLeft={leftIcon()}
       />
       <Stack.Navigator initialRouteName="Home">
         {

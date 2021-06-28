@@ -8,9 +8,10 @@ import api from "../../../servers/Login/index";
 import Button from "../../../components/Button/index";
 import Loading from "../../../components/Loading";
 import { encrypt } from "../../../assets/crypto";
-import { setCookie } from "../../../assets/cookie";
+import { clearAllCookie, setCookie } from "../../../assets/cookie";
 import messages from "../../../assets/js/message";
 import errorMessage from "../../../components/errorMessage";
+import { data } from "../../../store/dataSource";
 
 const LoginPage = props => {
   const [userName, set_userName] = useState("");//用户名
@@ -112,13 +113,16 @@ const LoginPage = props => {
     errorMessage(message);
   };
   /*存储用户信息*/
-  const saveUserMessage = (res) => {
-    setCookie("token", res.token);//存token
+  const saveUserMessage = async (res) => {
+    props.dispatch(dispatch => {
+      dispatch({ type: "USER", payload: { message: { ...res } } });
+    });
+    await setCookie("token", res.token);//存token
+    props.navigation.navigate("HomePage");//打开页面
     set_phoneOrMailCode("");
     set_imageCode("");
-    props.navigation.navigate("HomePage");//打开页面
-    getImageCode();
   };
+
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
     props.navigation.navigate("Person");
@@ -177,7 +181,6 @@ const LoginPage = props => {
   };
   /*登录*/
   const onLogin = () => {
-    // return props.navigation.navigate("HomePage");//打开页面 TODO: 直接进入页面
     const condition = !userName || !password || !imageCode || !phoneOrMailCode;
     const message = "请输入登录名、密码、图形验证码和手机或邮箱验证码";
     ready(condition, message, getOnLogin).then(() => {
@@ -202,11 +205,23 @@ const LoginPage = props => {
       default:
     }
   };
+  /*初始化*/
+  const init = () => {
+    clearAllCookie();//清空cookie
+    props.dispatch(dispatch => {//重置数据源
+      dispatch({ type: "TITLE", payload: { ...data.titles } });
+      dispatch({ type: "USER", payload: { ...data.userMessage } });
+      dispatch({ type: "AREA", payload: { ...data.ares } });
+      dispatch({ type: "TOKEN", payload: { ...data.token } });
+    });
+
+  };
   useMemo(() => {
     getImageCode();
   }, [token]);
 
   useEffect(() => {
+    init();
     return () => {
       rollBackTiming();
     };

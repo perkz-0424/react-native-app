@@ -11,6 +11,7 @@ import SelectStation from "./SelectStation";
 const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
+  const level = props.state.areas.level;
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const [searchValue, set_searchValue] = useState("");
   const [page, set_page] = useState(index);
@@ -46,6 +47,8 @@ const Area = props => {
                       fontSize: 14 / fontScale,
                       color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
                     }}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
                   >
                     {item.name ? item.name : "请选择"}
                   </Text>
@@ -57,7 +60,7 @@ const Area = props => {
       </View>
     );
   };
-  const changeArea = ({ level, name, page }) => {
+  const changeArea = ({ page }) => {
     set_page(page);
   };
   return (
@@ -91,10 +94,33 @@ const Area = props => {
           page={page}
           animated={false}
         >
-          <SelectProvince area={tabs} navigation={props.navigation} changeArea={changeArea}/>
-          <SelectCity area={tabs} navigation={props.navigation} changeArea={changeArea}/>
-          <SelectTown/>
-          <SelectStation/>
+          <SelectProvince
+            area={tabs}
+            navigation={props.navigation}
+            changeArea={changeArea}
+            level={level}
+          />
+          <SelectCity
+            area={tabs}
+            navigation={props.navigation}
+            changeArea={changeArea}
+            from={props.route.params.fromRouteName}
+            level={level}
+          />
+          <SelectTown
+            area={tabs}
+            navigation={props.navigation}
+            changeArea={changeArea}
+            from={props.route.params.fromRouteName}
+            level={level}
+          />
+          <SelectStation
+            area={tabs}
+            navigation={props.navigation}
+            changeArea={changeArea}
+            from={props.route.params.fromRouteName}
+            level={level}
+          />
         </Tabs>
       </View>
     </View>
