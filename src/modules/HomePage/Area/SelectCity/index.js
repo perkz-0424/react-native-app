@@ -8,7 +8,7 @@ import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
-  const province_children = props.area.filter(v => v.level === "province")[0].chlidren;
+  const province_children = props.area.filter(v => v.level === "province")[0].children;
   const initCityWarningCounts = province_children ? province_children : [];
   const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
@@ -24,13 +24,15 @@ const SelectCity = (props) => {
         //删除省级以下
         delete areas[3].name;
         delete areas[3].info;
+        delete areas[3].SUID;
+        delete areas[2].AID;
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
-        delete areas[2].chlidren;
+        delete areas[2].children;
         delete areas[1].name;
         delete areas[1].info;
-        delete areas[1].chlidren;
+        delete areas[1].children;
         areaDispatch("province", 0, areas, province, 1, item);//更改为省级
         props.dispatch(dispatch => {
           dispatch({
@@ -38,6 +40,7 @@ const SelectCity = (props) => {
             payload: { title: props.from ? props.from : "告警列表" }
           });
         });//改变路由title
+        abort.abortCityWarningCounts && abort.abortCityWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
     } else {
@@ -48,9 +51,11 @@ const SelectCity = (props) => {
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
-        delete areas[2].chlidren;
+        delete areas[2].children;
+        delete areas[2].AID;
         delete areas[3].name;
         delete areas[3].info;
+        delete areas[3].SUID;
         areaDispatch("city", 1, areas, checkCity, 2, item);//更改为城市级
       }
     }
@@ -76,7 +81,7 @@ const SelectCity = (props) => {
     set_refreshing(true);
     const areas = [...props.state.areas.data]; //地市信息
     api.getCityWarningCounts("province").then(res => {
-      areas[0].chlidren = res;
+      areas[0].children = res;
       set_cityWarningCounts(res);
       props.dispatch(dispatch => {
         dispatch({ type: "AREA", payload: { data: areas } });
@@ -96,15 +101,17 @@ const SelectCity = (props) => {
         style={{
           justifyContent: "center",
           width: "100%",
-          backgroundColor: item.item.name === city ? "#f1f0f0" : "#fff"
+          backgroundColor: item.item.name === city ? "#f1f0f0" : "#fff",
+          borderBottomWidth: 0.4,
+          borderColor: "#d7d7d7"
         }}
         key={item.index}
         checked={item.item.name === city}
         onChange={() => {changeCity(item);}}
       >
         <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <View style={{ justifyContent: "center", flexDirection: "row" }}>
-            <Text style={{ fontSize: 14 }}>{item.item.name}</Text>
+          <View style={{ justifyContent: "center", flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ fontSize: 13, color: "#3c3c3c" }}>{item.item.name}</Text>
             {item.item.name !== "选择全部" && item.item["eng_status"] !== undefined && item.item["eng_status"] !== 0 ?
               <Image
                 source={require("../../../../assets/images/icon/status_icon_monit_def.png")}
@@ -113,7 +120,7 @@ const SelectCity = (props) => {
           </View>
           {item.item.name === "选择全部" ? null :
             <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ fontSize: 14, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
+              <Text style={{ fontSize: 13, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
             </View>}
         </View>
       </RadioItem>

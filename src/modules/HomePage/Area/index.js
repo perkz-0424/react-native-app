@@ -92,7 +92,7 @@ const Area = props => {
           tabBarUnderlineStyle={{ width: 10, height: 3 }}
           prerenderingSiblingsNumber={3}
           page={page}
-          animated={false}
+          animated={true}
         >
           <SelectProvince
             area={tabs}

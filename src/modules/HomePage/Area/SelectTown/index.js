@@ -8,7 +8,7 @@ import errorMessage from "../../../../components/errorMessage";
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
-  const city_children = props.area.filter(v => v.level === "city")[0].chlidren;//该城市下有的区县
+  const city_children = props.area.filter(v => v.level === "city")[0].children;//该城市下有的区县
   const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
   const town = props.area.filter(v => v.level === "town")[0].name;//选中的区县名称
@@ -18,6 +18,7 @@ const SelectTown = (props) => {
   const [refreshing, set_refreshing] = useState(false);//是否刷新
   const tabs = [{ name: "固网", netType: 0 }, { name: "无线网", netType: 1 }];//固网无线网选项
   const [netTypeIndex, set_netTypeIndex] = useState(netTypeInit);//固网无线网序号
+  const AID = props.area.filter(v => v.level === "town")[0].AID;
   //切换固网无线网
   const netTypeChange = (item, index) => {
     set_netTypeIndex(index);
@@ -32,7 +33,7 @@ const SelectTown = (props) => {
     set_refreshing(true);
     const areas = [...props.state.areas.data]; //地市信息
     api.getTownWarningCounts("city", city).then(res => {
-      areas[1].chlidren = res;
+      areas[1].children = res;
       set_townWarningCounts(res);
       props.dispatch(dispatch => {
         dispatch({ type: "AREA", payload: { data: areas } });
@@ -54,10 +55,12 @@ const SelectTown = (props) => {
       if (nowTown) {
         delete areas[3].name;
         delete areas[3].info;
+        delete areas[3].SUID;
         delete areas[2].name;
         delete areas[2].info;
         delete areas[2].netType;
-        delete areas[2].chlidren;
+        delete areas[2].children;
+        delete areas[2].AID;
         areaDispatch("city", 1, areas, city, 2, item);//更改为市级
         props.dispatch(dispatch => {
           dispatch({
@@ -65,6 +68,7 @@ const SelectTown = (props) => {
             payload: { title: props.from ? props.from : "告警列表" }
           });
         });//改变路由title
+        abort.abortTownWarningCounts && abort.abortTownWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
     } else {
@@ -72,8 +76,10 @@ const SelectTown = (props) => {
         areas[2].netType = item.item["NETTYPE"];
         areas[2].name = checkTown;
         areas[2].info = item;
+        areas[2].AID = item.item["AID"];
         delete areas[3].name;
         delete areas[3].info;
+        delete areas[3].SUID;
         areaDispatch("town", 2, areas, checkTown, 3, item);//更改为区县级
       }
     }
@@ -86,20 +92,23 @@ const SelectTown = (props) => {
     props.changeArea({ level, name, page, item });
   };
   const renderTownRow = (item) => {
+    const checked = item.item.name !== "选择全部" && item.item.AID === AID && item.item["NETTYPE"] === netType;
     return (
       <RadioItem
         style={{
           justifyContent: "center",
           width: "100%",
-          backgroundColor: item.item.name === town && item.item["NETTYPE"] ? "#f1f0f0" : "#fff"
+          backgroundColor: checked ? "#f1f0f0" : "#fff",
+          borderBottomWidth: 0.4,
+          borderColor: "#d7d7d7"
         }}
         key={item.index}
-        checked={item.item.name === town && item.item["NETTYPE"] === netType}
+        checked={checked}
         onChange={() => {changeTown(item);}}
       >
         <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-          <View style={{ justifyContent: "center", flexDirection: "row" }}>
-            <Text style={{ fontSize: 14 }}>{item.item.name}</Text>
+          <View style={{ justifyContent: "center", flexDirection: "row", alignItems: "center" }}>
+            <Text style={{ fontSize: 13, color: "#3c3c3c" }}>{item.item.name}</Text>
             {item.item.name !== "选择全部" && item.item["eng_status"] !== undefined && item.item["eng_status"] !== 0 ?
               <Image
                 style={{ marginLeft: 5, height: 14, width: 14 }}
@@ -107,7 +116,7 @@ const SelectTown = (props) => {
               /> : null}
           </View>{item.item.name === "选择全部" ? null :
           <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ fontSize: 14, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
+            <Text style={{ fontSize: 13, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
           </View>}
         </View>
       </RadioItem>

@@ -16,13 +16,15 @@ const SelectProvince = (props) => {
       areas[0].name = province;
       delete areas[1].name;
       delete areas[1].info;
-      delete areas[1].chlidren;
+      delete areas[1].children;
       delete areas[2].name;
       delete areas[2].info;
       delete areas[2].netType;
-      delete areas[2].chlidren;
+      delete areas[2].AID;
+      delete areas[2].children;
       delete areas[3].name;
       delete areas[3].info;
+      delete areas[3].SUID;
       props.dispatch(dispatch => {
         dispatch({ type: "AREA", payload: { data: areas, level: "province", index: 0 } });
       });
@@ -31,7 +33,12 @@ const SelectProvince = (props) => {
   };
   const renderProvinceRow = (provinceItem) => {
     return <RadioItem
-      style={{ justifyContent: "center" }}
+      style={{
+        justifyContent: "center",
+        backgroundColor: provinceItem.item.name === province ? "#f1f0f0" : "#fff",
+        borderBottomWidth: 0.4,
+        borderColor: "#d7d7d7"
+      }}
       key={provinceItem.index}
       checked={provinceItem.item.name === province}
       onChange={() => {changeProvince(provinceItem);}}
@@ -40,7 +47,7 @@ const SelectProvince = (props) => {
         flex: 1,
         justifyContent: "center"
       }}>
-        <Text style={{ fontSize: 14 }}>{provinceItem.item.name}</Text>
+        <Text style={{ fontSize: 13, color: "#3c3c3c" }}>{provinceItem.item.name}</Text>
       </View>
     </RadioItem>;
   };
