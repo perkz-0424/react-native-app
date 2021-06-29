@@ -22,7 +22,7 @@ const data = {
   },
   titles: { title: "告警列表" },
   userMessage: { message: {} },
-  token: { value: "" }
+  token: { value: "", decoded: {} }
 };
 const dataSource = {
   areas: createDataSource("AREA", { ...data.ares }),//地域数据

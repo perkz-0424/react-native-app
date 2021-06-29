@@ -24,11 +24,17 @@ const SelectTown = (props) => {
   };
   //区县数据
   const getTowns = () => {
-    const towns = townWarningCounts.filter(v => v["NETTYPE"] === netTypeIndex).sort((a, b) => a["AID"] - b["AID"]);
-    return [{ name: "选择全部" }].concat(towns);
+    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
+    const rootArea = props.state.userMessage.message.area;//权限数组
+    const levelRoot = root !== "province" && root !== "city";
+    const rootAID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.AID) : [];//权限AID
+    const afterRootTowns = levelRoot ? townWarningCounts.filter(v => rootAID.includes(v.AID)) : townWarningCounts;//权限之后的局站
+    const towns = afterRootTowns.filter(v => v["NETTYPE"] === netTypeIndex);//固网无线网分开
+    return towns.length ? [{ name: "选择全部" }].concat(towns.sort((a, b) => a["AID"] - b["AID"])) : [];//是否有选择全部
   };
   //获取数据
   const getTownsInfo = () => {
+
     set_refreshing(true);
     const areas = [...props.state.areas.data]; //地市信息
     api.getTownWarningCounts("city", city).then(res => {
@@ -91,7 +97,7 @@ const SelectTown = (props) => {
     props.changeArea({ level, name, page, item });
   };
   const renderTownRow = (item) => {
-    const checked = item.item.name !== "选择全部" && item.item.AID === AID && item.item["NETTYPE"] === netType;
+    const checked = item.item.name !== "选择全部" && item.item.AID === AID && item.item["NETTYPE"] === netType;//被选中
     return (
       <RadioItem
         style={{
@@ -173,12 +179,12 @@ const SelectTown = (props) => {
         >
           <View style={{ width: "100%", flex: 1 }}>
             <View style={styles.title}>
-              <Text style={styles.fontStyle}>地区名称</Text>
+              <Text style={styles.fontStyle}>县市区域</Text>
               <Text style={styles.fontStyle}>告警数量</Text>
             </View>
             <FlatList
               data={getTowns()}
-              keyExtractor={(item) => item.name}
+              keyExtractor={(item) => `town${item.AID}`}
               renderItem={renderTownRow}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getTownsInfo}/>}
             />

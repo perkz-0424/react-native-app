@@ -17,8 +17,14 @@ const SelectStation = (props) => {
   const [stationWarningCounts, set_stationWarningCounts] = useState(initStationWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
 
+  //局站处理
   const getStations = () => {
-    return [{ name: "选择全部" }].concat(stationWarningCounts);
+    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
+    const rootArea = props.state.userMessage.message.area;//权限数组
+    const levelRoot = root !== "province" && root !== "city" && root !== "town";//排除
+    const rootSUID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.SUID) : [];//权限SUID
+    const afterRootStations = levelRoot ? stationWarningCounts.filter(v => rootSUID.includes(v.SUID)) : stationWarningCounts;//权限的局站
+    return [{ name: "选择全部" }].concat(afterRootStations);
   };
   //获取局站告警
   const getStationWarningCounts = () => {
@@ -38,6 +44,7 @@ const SelectStation = (props) => {
       set_refreshing(false);
     });
   };
+  //选择局站
   const changeStation = (item) => {
     const checkStation = item.item.name;//选中的局站名
     const areas = [...props.state.areas.data]; //地市信息

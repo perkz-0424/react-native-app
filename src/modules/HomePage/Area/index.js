@@ -7,6 +7,7 @@ import SelectProvince from "./SelectProvince";
 import SelectCity from "./SelectCity";
 import SelectTown from "./SelectTown";
 import SelectStation from "./SelectStation";
+import Loading from "../../../components/Loading";
 
 const fontScale = PixelRatio.getFontScale();
 const Area = props => {
@@ -15,6 +16,24 @@ const Area = props => {
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const [searchValue, set_searchValue] = useState("");
   const [page, set_page] = useState(index);
+  const [loading, set_loading] = useState(false);
+  const changeArea = ({ page }) => {
+    set_page(page);
+  };
+  const searchStationsByKeyWords = (value) => {
+    const areas = props.state.areas;
+    const group_id = props.state.token.decoded["group_id"];
+    const params = {
+      keyword: value,
+      group_id,
+    };
+  };
+  const onSubmit = () => {
+    set_page(3);
+    // set_loading(true);
+    searchStationsByKeyWords(searchValue);
+
+  };
   const renderTabBar = (tabBarPropsType) => {
     return (
       <View
@@ -60,11 +79,9 @@ const Area = props => {
       </View>
     );
   };
-  const changeArea = ({ page }) => {
-    set_page(page);
-  };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
+      <Loading loading={loading} text="加载中"/>
       <SearchBar
         value={searchValue}
         clearButtonMode="never"
@@ -74,7 +91,7 @@ const Area = props => {
           set_searchValue("");
           Keyboard.dismiss();
         }}
-        onSubmit={() => {}}
+        onSubmit={onSubmit}
         onChange={value => {
           set_searchValue(value);
         }}

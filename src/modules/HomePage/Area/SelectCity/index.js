@@ -69,11 +69,13 @@ const SelectCity = (props) => {
   };
   //获取城市数据
   const getCities = () => {
+    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
+    const rootArea = props.state.userMessage.message.area;//权限数组
+    const rootCities = root !== "province" && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.city) : [];//城市权限
     const cities = level.city.filter(v => v.parents.province === province);//拿到本地地市数据表里的数据
-    const citiesInfo = cityWarningCounts.map((cityInfo => {
-      return { ...cityInfo, ...cities.filter(v => v.name === cityInfo.name)[0] };//把两个数据整合在一起
-    })).sort((a, b) => a["SCID"] - b["SCID"]);//根据SCID排序
-    return [{ name: "选择全部" }].concat(citiesInfo);//输出
+    const citiesInfo = cityWarningCounts.map((cityInfo => ({ ...cityInfo, ...cities.filter(v => v.name === cityInfo.name)[0] })));//根据SCID排序
+    const afterRootCities = root === "province" ? citiesInfo : citiesInfo.filter(v => rootCities.includes(v.name));//输出权限模块
+    return [{ name: "选择全部" }].concat(afterRootCities.sort((a, b) => a["SCID"] - b["SCID"]));//排序
   };
 
   //获取城市告警数

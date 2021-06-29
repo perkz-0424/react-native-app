@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { View, Alert, StyleSheet, Dimensions, Text, Keyboard, Image, Platform, TouchableOpacity } from "react-native";
+import jwtDecode from "jwt-decode";
 import { Password, Normal, ImageVerificationCode, PhoneVerificationCode } from "../../../components/Input/index";
 import { connect } from "react-redux";
 import { Icon } from "@ant-design/react-native";
@@ -92,9 +93,6 @@ const LoginPage = props => {
             getImageCode();
           }
         } else {
-          props.dispatch(dispatch => {
-            dispatch({ type: "TOKEN", payload: { value: res.token } });
-          });
           saveUserMessage(res);
         }
       } else {
@@ -115,15 +113,53 @@ const LoginPage = props => {
   };
   /*存储用户信息*/
   const saveUserMessage = (res) => {
+    const decoded = jwtDecode(res.token);//解密token
     props.dispatch(dispatch => {
+      dispatch({ type: "TOKEN", payload: { value: res.token, decoded } });
       dispatch({ type: "USER", payload: { message: { ...res } } });
     });
+    initSetArea(decoded["root_level"], res.area);
     setCookie("token", res.token);//存token
     props.navigation.navigate("HomePage");//打开页面
     set_phoneOrMailCode("");
     set_imageCode("");
   };
-
+  /*初始化设置区域*/
+  const initSetArea = (level, area) => {
+    const tempAreas = [...props.state.areas.data]; //地市信息
+    switch (level) {
+      case "city":
+        const sortCity = area.sort((a, b) => a["SCID"] - b["SCID"]);
+        tempAreas[1].name = sortCity[0]["city"];
+        props.dispatch(dispatch => {
+          dispatch({ type: "AREA", payload: { data: tempAreas, level: "city", index: 1 } });
+        });
+        break;
+      case "town":
+        const sortTown = area.sort((a, b) => a["AID"] - b["AID"]);
+        tempAreas[1].name = sortTown[0]["city"];
+        tempAreas[2].name = sortTown[0]["town"];
+        tempAreas[2].AID = sortTown[0]["AID"];
+        tempAreas[2].netType = sortTown[0]["NETTYPE"];
+        props.dispatch(dispatch => {
+          dispatch({ type: "AREA", payload: { data: tempAreas, level: "town", index: 2 } });
+        });
+        break;
+      case "station":
+        const sortStation = area.sort((a, b) => a["SUID"] - b["SUID"]);
+        tempAreas[1].name = sortStation[0]["city"];
+        tempAreas[2].name = sortStation[0]["town"];
+        tempAreas[2].AID = sortStation[0]["AID"];
+        tempAreas[2].netType = sortStation[0]["NETTYPE"];
+        tempAreas[3].name = sortStation[0]["station"];
+        tempAreas[3].SUID = sortStation[0]["SUID"];
+        props.dispatch(dispatch => {
+          dispatch({ type: "AREA", payload: { data: tempAreas, level: "station", index: 3 } });
+        });
+        break;
+      default:
+    }
+  };
   /*跳转到阅读隐私权政策*/
   const showPerson = () => {
     props.navigation.navigate("Person");
