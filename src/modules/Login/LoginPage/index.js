@@ -210,10 +210,10 @@ const LoginPage = props => {
   const init = () => {
     clearAllCookie();//清空cookie
     props.dispatch(dispatch => {//重置数据源
-      dispatch({ type: "TITLE", payload: { ...data.titles } });
-      dispatch({ type: "USER", payload: { ...data.userMessage } });
       dispatch({ type: "AREA", payload: { ...data.ares } });
       dispatch({ type: "TOKEN", payload: { ...data.token } });
+      dispatch({ type: "TITLE", payload: { ...data.titles } });
+      dispatch({ type: "USER", payload: { ...data.userMessage } });
     });
   };
   useMemo(() => {

@@ -1,3 +1,4 @@
+import "../../../shim";
 import cookieManager from "react-native-cookie";
 import config from "../../config";
 
