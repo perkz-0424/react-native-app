@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
 import { connect } from "react-redux";
@@ -11,14 +11,13 @@ const SelectTown = (props) => {
   const city_children = props.area.filter(v => v.level === "city")[0].children;//该城市下有的区县
   const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
-  const town = props.area.filter(v => v.level === "town")[0].name;//选中的区县名称
   const netType = props.area.filter(v => v.level === "town")[0].netType;//选中的区县网络类型
   const netTypeInit = netType ? netType : 0;//初始化的网络类型在哪页
   const [townWarningCounts, set_townWarningCounts] = useState(initTownWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
   const tabs = [{ name: "固网", netType: 0 }, { name: "无线网", netType: 1 }];//固网无线网选项
   const [netTypeIndex, set_netTypeIndex] = useState(netTypeInit);//固网无线网序号
-  const AID = props.area.filter(v => v.level === "town")[0].AID;
+  const AID = props.area.filter(v => v.level === "town")[0].AID;//选中的区县AID
   //切换固网无线网
   const netTypeChange = (item, index) => {
     set_netTypeIndex(index);
@@ -147,14 +146,6 @@ const SelectTown = (props) => {
       </View>
     );
   };
-  const renderHeader = () => {
-    return (
-      <View style={styles.title}>
-        <Text style={styles.fontStyle}>地区名称</Text>
-        <Text style={styles.fontStyle}>告警数量</Text>
-      </View>
-    );
-  };
   useEffect(() => {
     if (city) {
       getTownsInfo();
@@ -181,9 +172,12 @@ const SelectTown = (props) => {
           animated={false}
         >
           <View style={{ width: "100%", flex: 1 }}>
+            <View style={styles.title}>
+              <Text style={styles.fontStyle}>地区名称</Text>
+              <Text style={styles.fontStyle}>告警数量</Text>
+            </View>
             <FlatList
               data={getTowns()}
-              ListHeaderComponent={renderHeader}
               keyExtractor={(item) => item.name}
               renderItem={renderTownRow}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getTownsInfo}/>}

@@ -12,9 +12,8 @@ const SelectStation = (props) => {
   const town = props.area.filter(v => v.level === "town")[0].name;//区县名称
   const aid = props.area.filter(v => v.level === "town")[0].AID;//区县的AID
   const AID = aid ? aid : 0;
-  const SUID = props.area.filter(v => v.level === "station")[0].SUID;//局站的SUID
+  const SUID = props.area.filter(v => v.level === "station")[0].SUID;//选中的局站的SUID
   const townNetType = props.area.filter(v => v.level === "town")[0].netType;//区县的网络类型
-  const station = props.area.filter(v => v.level === "station")[0].name;//选中的局站名称
   const [stationWarningCounts, set_stationWarningCounts] = useState(initStationWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
 
@@ -74,14 +73,6 @@ const SelectStation = (props) => {
     });
     props.changeArea({ level, name, page, item });
   };
-  const renderHeader = () => {
-    return (
-      <View style={styles.title}>
-        <Text style={styles.fontStyle}>局站名称</Text>
-        <Text style={styles.fontStyle}>告警数量</Text>
-      </View>
-    );
-  };
   const renderStationRow = (item) => {
     const checked = item.item.name !== "选择全部" && item.item.SUID === SUID;
     return (
@@ -139,9 +130,12 @@ const SelectStation = (props) => {
   }, [town]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
+      <View style={styles.title}>
+        <Text style={styles.fontStyle}>局站名称</Text>
+        <Text style={styles.fontStyle}>告警数量</Text>
+      </View>
       <FlatList
         data={getStations()}
-        ListHeaderComponent={renderHeader}
         keyExtractor={(item) => `station${item["SUID"]}`}
         renderItem={renderStationRow}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getStationWarningCounts}/>}

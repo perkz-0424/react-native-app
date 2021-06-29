@@ -126,15 +126,6 @@ const SelectCity = (props) => {
       </RadioItem>
     );
   };
-  const renderHeader = () => {
-    return (
-      <View style={styles.title}>
-        <Text style={styles.fontStyle}>地区名称</Text>
-        <Text style={styles.fontStyle}>告警数量</Text>
-      </View>
-    );
-  };
-
   useEffect(() => {
     return () => {
       abort.abortCityWarningCounts && abort.abortCityWarningCounts();
@@ -148,9 +139,12 @@ const SelectCity = (props) => {
   }, [province]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
+      <View style={styles.title}>
+        <Text style={styles.fontStyle}>地区名称</Text>
+        <Text style={styles.fontStyle}>告警数量</Text>
+      </View>
       <FlatList
         data={getCities()}
-        ListHeaderComponent={renderHeader}
         keyExtractor={(item) => item.name}
         renderItem={renderCityRow}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getCityWarningCounts}/>}
