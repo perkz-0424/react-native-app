@@ -27,6 +27,13 @@ const level = [
   },
   {
     category: "city",
+    name: "嘉兴市",
+    parents: {
+      province: "浙江省"
+    },
+  },
+  {
+    category: "city",
     name: "湖州市",
     parents: {
       province: "浙江省"
@@ -34,14 +41,14 @@ const level = [
   },
   {
     category: "city",
-    name: "舟山市",
+    name: "绍兴市",
     parents: {
       province: "浙江省"
     },
   },
   {
     category: "city",
-    name: "嘉兴市",
+    name: "金华市",
     parents: {
       province: "浙江省"
     },
@@ -55,7 +62,7 @@ const level = [
   },
   {
     category: "city",
-    name: "金华市",
+    name: "舟山市",
     parents: {
       province: "浙江省"
     },
@@ -70,13 +77,6 @@ const level = [
   {
     category: "city",
     name: "丽水市",
-    parents: {
-      province: "浙江省"
-    },
-  },
-  {
-    category: "city",
-    name: "绍兴市",
     parents: {
       province: "浙江省"
     },

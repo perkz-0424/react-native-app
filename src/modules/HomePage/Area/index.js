@@ -12,7 +12,6 @@ import Loading from "../../../components/Loading";
 const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
-  const level = props.state.areas.level;
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
   const [searchValue, set_searchValue] = useState("");
@@ -108,13 +107,12 @@ const Area = props => {
           tabBarPosition="top"
           tabs={tabs}
           renderTabBar={renderTabBar}
-          initialPage={0}
           tabBarBackgroundColor="#FFFFFF"
           tabBarTextStyle={{ fontSize: 15 }}
           tabBarActiveTextColor="#1D9AFF"
           tabBarInactiveTextColor="#333333"
           tabBarUnderlineStyle={{ width: 10, height: 3 }}
-          prerenderingSiblingsNumber={3}
+          prerenderingSiblingsNumber={2}
           page={page}
           animated={false}
         >

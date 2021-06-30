@@ -8,8 +8,8 @@ import errorMessage from "../../../../components/errorMessage";
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
   const province_children = props.area.filter(v => v.level === "province")[0].children;
-  const initCityWarningCounts = province_children ? province_children : [];
   const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
+  const initCityWarningCounts = province_children ? province_children : level.city.filter(v => v.parents.province === province);
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
   const [cityWarningCounts, set_cityWarningCounts] = useState(initCityWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
@@ -105,14 +105,16 @@ const SelectCity = (props) => {
           </View>
           {item.item.name === "选择全部" ? null :
             <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ fontSize: 13, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
+              <Text style={{ fontSize: 13, color: "#9c9c9c" }}>
+                {item.item["alarm_count"] ? item.item["alarm_count"] : "获取中"}
+              </Text>
             </View>}
         </View>
       </RadioItem>
     );
   };
   useEffect(() => {
-    if (province && !cityWarningCounts.length) {
+    if (province) {
       getCityWarningCounts();
     }
     return () => {
