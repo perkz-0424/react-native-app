@@ -106,7 +106,7 @@ const SelectCity = (props) => {
           {item.item.name === "选择全部" ? null :
             <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
               <Text style={{ fontSize: 13, color: "#9c9c9c" }}>
-                {item.item["alarm_count"] ? item.item["alarm_count"] : "获取中"}
+                {item.item["alarm_count"] !== undefined ? item.item["alarm_count"] : "获取中"}
               </Text>
             </View>}
         </View>
@@ -133,6 +133,7 @@ const SelectCity = (props) => {
         keyExtractor={(item) => item.name}
         renderItem={renderCityRow}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getCityWarningCounts}/>}
+        initialNumToRender={12}
       />
     </View>
   );

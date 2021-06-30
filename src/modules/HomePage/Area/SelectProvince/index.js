@@ -55,6 +55,7 @@ const SelectProvince = (props) => {
         data={level.province}
         keyExtractor={(item) => item.name}
         renderItem={renderProvinceRow}
+        initialNumToRender={1}
       />
     </View>
   );

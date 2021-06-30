@@ -2,11 +2,13 @@ import React from "react";
 import { ActivityIndicator, Dimensions, Text, View } from "react-native";
 
 const Loading = (props) => {
+  const styleView = props.style ? props.style : {};
   return (
     <View style={{
       width: "100%",
       position: "absolute",
       zIndex: 100,
+      ...styleView,
     }}
     >
       {

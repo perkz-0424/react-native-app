@@ -1,9 +1,11 @@
 import request from "../../fetch";
+import util from "../../assets/js/util";
 //定义终止请求
 const abort = {
   abortCityWarningCounts: null,
   abortTownWarningCounts: null,
   abortStationByAIDAndNetType: null,
+  abortStationsByKeyword: null
 };
 const api = {
   //获取告警数量
@@ -24,6 +26,12 @@ const api = {
     const controller = new AbortController();
     abort.abortStationByAIDAndNetType = () => controller.abort();
     return request("GET", `/monitoring_manage/get_stations?AID=${AID}&net_type=${netType}`, {}, controller.signal);
+  },
+  getStationsByKeyword: (params) => {
+    abort.abortStationsByKeyword && abort.abortStationsByKeyword();
+    const controller = new AbortController();
+    abort.abortStationsByKeyword = () => controller.abort();
+    return request("GET", `/resource_manager/search_station_by_keyword${util.objToQueryString(params)}`, {}, controller.signal);
   }
 };
 export { abort };

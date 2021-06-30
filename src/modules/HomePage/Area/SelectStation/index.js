@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
+import { View, Text, FlatList, StyleSheet, Image } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
@@ -9,13 +9,12 @@ const RadioItem = Radio.RadioItem;
 const SelectStation = (props) => {
   const town_children = props.area.filter(v => v.level === "town")[0].children;
   const initStationWarningCounts = town_children ? town_children : [];
-  const town = props.area.filter(v => v.level === "town")[0].name;//区县名称
   const aid = props.area.filter(v => v.level === "town")[0].AID;//区县的AID
   const AID = aid ? aid : 0;
   const SUID = props.area.filter(v => v.level === "station")[0].SUID;//选中的局站的SUID
   const townNetType = props.area.filter(v => v.level === "town")[0].netType;//区县的网络类型
   const [stationWarningCounts, set_stationWarningCounts] = useState(initStationWarningCounts);//告警数量
-  const [refreshing, set_refreshing] = useState(false);//是否刷新
+  let isSearch = false;
 
   //局站处理
   const getStations = () => [{ name: "选择全部" }].concat(stationWarningCounts);
@@ -32,21 +31,26 @@ const SelectStation = (props) => {
   };
   //获取局站告警
   const getStationWarningCounts = () => {
-    set_refreshing(true);
+    isSearch = false;
+    props.loading(true);
     if (AID) {
       api.getStationByAIDAndNetType(AID, townNetType).then(res => {
+        props.loading(false);
         setStationWarningCounts(res.response);
-        set_refreshing(false);
         _AID = AID;
       }).catch((error) => {
+        props.loading(false);
         if (error.toString() !== "AbortError: Aborted") {
           errorMessage("获取数据失败");
         }
-        set_refreshing(false);
       });
     } else {
-      set_refreshing(false);
+      props.loading(false);
     }
+  };
+  const setSearchStationByKeyWords = () => {
+    isSearch = true;
+    setStationWarningCounts(props.searchResult);
   };
   //选择局站
   const changeStation = (item) => {
@@ -56,7 +60,15 @@ const SelectStation = (props) => {
     if (checkStation === "选择全部") {
       if (nowStation) {
         areas[3] = { level: "station" };
-        areaDispatch("town", 2, areas, town, 3, item);
+        if (areas[2].name) {
+          return areaDispatch("town", 2, areas, areas[2].name, 3, item);
+        }
+        if (areas[1].name) {
+          return areaDispatch("city", 1, areas, areas[1].name, 2, item);
+        }
+        if (areas[0].name) {
+          return areaDispatch("province", 0, areas, areas[0].name, 1, item);
+        }
       }
     } else {
       if (checkStation !== nowStation) {
@@ -66,17 +78,21 @@ const SelectStation = (props) => {
           info: item,
           SUID: item.item["SUID"]
         };
+        areas[2].name = item.item.parents["town"];
+        areas[2].netType = item.item["NETTYPE"];
+        areas[2].AID = item.item.AID;
+        areas[1].name = item.item.parents.city;
         areaDispatch("station", 3, areas, checkStation, 3, item);
       }
     }
-    props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
-    abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
-    props.navigation.goBack();//返回到上一页
   };
   //区域变更
   const areaDispatch = (level, index, areas, name, page, item) => {
     props.changeDispatch("AREA", { data: areas, level, index });
     props.changeArea({ level, name, page, item });
+    props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
+    abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
+    props.navigation.goBack();//返回到上一页
   };
   const renderStationRow = (item) => {
     const checked = item.item.name !== "选择全部" && item.item.SUID === SUID;
@@ -124,13 +140,17 @@ const SelectStation = (props) => {
     );
   };
   useEffect(() => {
-    if (town && AID !== _AID) {
+    if (AID && _AID !== AID) {
       getStationWarningCounts();
+      return;
+    }
+    if (props.searchEndValue) {
+      setSearchStationByKeyWords();
     }
     return () => {
       abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     };
-  }, [town]);
+  }, [AID, props.searchEndValue]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <View style={styles.title}>
@@ -141,7 +161,7 @@ const SelectStation = (props) => {
         data={getStations()}
         keyExtractor={(item) => `station${item["SUID"]}`}
         renderItem={renderStationRow}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getStationWarningCounts}/>}
+        initialNumToRender={16}
       />
     </View>
   );

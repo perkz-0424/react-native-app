@@ -3,8 +3,9 @@ const config = {
   // Url: "http://122.229.8.173:3091/pyapi", //线上环境
   // Url: "http://192.168.31.203:3081", //xiaoyu
   Url: "http://10.52.14.219:3080",
+  // Url: "http://122.229.8.173:3095/pyapi",
   imageKey: "thisisakeykeykey",
-  imageIv:"This is an IV456",
+  imageIv: "This is an IV456",
   // 实时数据刷新间隔
   realTimeFetchInterval: 1000 * 5,
   // 实时数据没有刷到数据时的刷新间隔

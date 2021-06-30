@@ -148,7 +148,7 @@ const SelectTown = (props) => {
     );
   };
   useEffect(() => {
-    if (city && _city !== city) {
+    if (city) {
       getTownsInfo();
     }
     return () => {
@@ -182,6 +182,7 @@ const SelectTown = (props) => {
               keyExtractor={(item) => `town${item.AID}`}
               renderItem={renderTownRow}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getTownsInfo}/>}
+              initialNumToRender={15}
             />
           </View>
         </Tabs>
