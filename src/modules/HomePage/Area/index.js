@@ -14,6 +14,7 @@ const Area = props => {
   const tabs = props.state.areas.data;
   const level = props.state.areas.level;
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
+  const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
   const [searchValue, set_searchValue] = useState("");
   const [page, set_page] = useState(index);
   const [loading, set_loading] = useState(false);
@@ -33,6 +34,12 @@ const Area = props => {
     // set_loading(true);
     searchStationsByKeyWords(searchValue);
 
+  };
+
+  const changeDispatch = (type, data) => {
+    props.dispatch(dispatch => {
+      dispatch({ type, payload: { ...data } });
+    });
   };
   const renderTabBar = (tabBarPropsType) => {
     return (
@@ -115,28 +122,37 @@ const Area = props => {
             area={tabs}
             navigation={props.navigation}
             changeArea={changeArea}
-            level={level}
+            rootArea={props.state.userMessage.message.area}
+            root={root}
+            changeDispatch={changeDispatch}
           />
           <SelectCity
             area={tabs}
             navigation={props.navigation}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
-            level={level}
+            rootArea={props.state.userMessage.message.area}
+            root={root}
+            changeDispatch={changeDispatch}
+
           />
           <SelectTown
             area={tabs}
             navigation={props.navigation}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
-            level={level}
+            rootArea={props.state.userMessage.message.area}
+            root={root}
+            changeDispatch={changeDispatch}
           />
           <SelectStation
             area={tabs}
             navigation={props.navigation}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
-            level={level}
+            rootArea={props.state.userMessage.message.area}
+            root={root}
+            changeDispatch={changeDispatch}
           />
         </Tabs>
       </View>

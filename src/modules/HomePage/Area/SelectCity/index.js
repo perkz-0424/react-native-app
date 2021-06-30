@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
-import { connect } from "react-redux";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
@@ -17,7 +16,7 @@ const SelectCity = (props) => {
   //点击切换城市
   const changeCity = (item) => {
     const checkCity = item.item.name; //选中的市级
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const nowCity = areas[1].name; //现在所在的市级
     if (checkCity === "选择全部") {
       if (nowCity) {
@@ -26,9 +25,8 @@ const SelectCity = (props) => {
         areas[2] = { level: "town" };
         areas[3] = { level: "station" };
         areaDispatch("province", 0, areas, province, 1, item);//更改为省级
-        props.dispatch(dispatch => {
-          dispatch({ type: "TITLE", payload: { title: props.from ? props.from : "告警列表" } });
-        });//改变路由title
+        const title = props.from ? props.from : "告警列表";
+        props.changeDispatch("TITLE", { title });
         abort.abortCityWarningCounts && abort.abortCityWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
@@ -48,10 +46,8 @@ const SelectCity = (props) => {
   };
   //区域变更
   const areaDispatch = (level, index, areas, name, page, item) => {
-    props.dispatch(dispatch => {
-      dispatch({ type: "AREA", payload: { data: areas, level, index } });
-      props.changeArea({ level, name, page, item });
-    });
+    props.changeDispatch("AREA", { data: areas, level, index });
+    props.changeArea({ level, name, page, item });
   };
   //获取城市告警数
   const getCityWarningCounts = () => {
@@ -67,18 +63,17 @@ const SelectCity = (props) => {
     });
   };
   const setCityWarningCounts = (res) => {
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const _cityWarningCounts = [...res];
-    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
-    const rootArea = props.state.userMessage.message.area;//权限数组
-    const rootCities = root !== "province" && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.city) : [];//城市权限
+    const rootArea = props.rootArea;//权限数组
+    const rootCities = props.root !== "province" && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.city) : [];//城市权限
     const cities = level.city.filter(v => v.parents.province === province);//拿到本地地市数据表里的数据
     const citiesInfo = _cityWarningCounts.map((cityInfo => ({ ...cityInfo, ...cities.filter(v => v.name === cityInfo.name)[0] })));//根据SCID排序
-    const afterRootCities = root === "province" ? citiesInfo : citiesInfo.filter(v => rootCities.includes(v.name));//输出权限模块
+    const afterRootCities = props.root === "province" ? citiesInfo : citiesInfo.filter(v => rootCities.includes(v.name));//输出权限模块
     const sortCities = afterRootCities.sort((a, b) => a["SCID"] - b["SCID"]);
     set_cityWarningCounts(sortCities);//排序
     areas[0].children = sortCities;
-    props.dispatch(dispatch => {dispatch({ type: "AREA", payload: { data: areas } });});
+    props.changeDispatch("AREA", { data: areas });
   };
   //获取城市数据
   const getCities = () => [{ name: "选择全部" }].concat(cityWarningCounts);
@@ -114,16 +109,14 @@ const SelectCity = (props) => {
     );
   };
   useEffect(() => {
+    if (province && !cityWarningCounts.length) {
+      getCityWarningCounts();
+    }
     return () => {
       abort.abortCityWarningCounts && abort.abortCityWarningCounts();
     };
-  }, []);
-
-  useMemo(() => {
-    if (province) {
-      getCityWarningCounts();
-    }
   }, [province]);
+
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <View style={styles.title}>
@@ -153,4 +146,4 @@ const styles = StyleSheet.create({
     color: "#999999"
   }
 });
-export default connect(state => ({ state }))(SelectCity);
+export default SelectCity;

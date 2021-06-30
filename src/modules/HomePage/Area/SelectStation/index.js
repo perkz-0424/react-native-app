@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
-import { connect } from "react-redux";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
@@ -20,16 +19,15 @@ const SelectStation = (props) => {
   //局站处理
   const getStations = () => [{ name: "选择全部" }].concat(stationWarningCounts);
   const setStationWarningCounts = (res) => {
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const _stationWarningCounts = [...res];
-    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
-    const rootArea = props.state.userMessage.message.area;//权限数组
-    const levelRoot = root !== "province" && root !== "city" && root !== "town";//排除
+    const rootArea = props.rootArea;//权限数组
+    const levelRoot = props.root !== "province" && props.root !== "city" && props.root !== "town";//排除
     const rootSUID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.SUID) : [];//权限SUID
     const afterRootStations = levelRoot ? _stationWarningCounts.filter(v => rootSUID.includes(v.SUID)) : _stationWarningCounts;//权限的局站
     set_stationWarningCounts(afterRootStations);
     areas[2].children = afterRootStations;
-    props.dispatch(dispatch => {dispatch({ type: "AREA", payload: { data: areas } });});
+    props.changeDispatch("AREA", { data: areas });
   };
   //获取局站告警
   const getStationWarningCounts = () => {
@@ -47,7 +45,7 @@ const SelectStation = (props) => {
   //选择局站
   const changeStation = (item) => {
     const checkStation = item.item.name;//选中的局站名
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const nowStation = areas[3].name;//之前被选中的局站
     if (checkStation === "选择全部") {
       if (nowStation) {
@@ -65,17 +63,13 @@ const SelectStation = (props) => {
         areaDispatch("station", 3, areas, checkStation, 3, item);
       }
     }
-    props.dispatch(dispatch => {
-      dispatch({ type: "TITLE", payload: { title: props.from ? props.from : "告警列表" } });
-    });//改变路由title
+    props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
     abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     props.navigation.goBack();//返回到上一页
   };
   //区域变更
   const areaDispatch = (level, index, areas, name, page, item) => {
-    props.dispatch(dispatch => {
-      dispatch({ type: "AREA", payload: { data: areas, level, index } });
-    });
+    props.changeDispatch("AREA", { data: areas, level, index });
     props.changeArea({ level, name, page, item });
   };
   const renderStationRow = (item) => {
@@ -124,14 +118,12 @@ const SelectStation = (props) => {
     );
   };
   useEffect(() => {
+    if (town && !stationWarningCounts.length) {
+      getStationWarningCounts();
+    }
     return () => {
       abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     };
-  }, []);
-  useMemo(() => {
-    if (town) {
-      getStationWarningCounts();
-    }
   }, [town]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
@@ -162,4 +154,4 @@ const styles = StyleSheet.create({
     color: "#999999"
   }
 });
-export default connect(state => ({ state }))(SelectStation);
+export default SelectStation;

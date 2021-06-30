@@ -1,6 +1,5 @@
 const createDataSource = (type, data) => {
   return (state = data, action) => {
-    console.log(action.type)
     switch (action.type) {
       case type:
         return { ...state, ...action.payload };

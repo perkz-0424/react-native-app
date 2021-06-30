@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
-import { connect } from "react-redux";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
@@ -25,24 +24,23 @@ const SelectTown = (props) => {
   //区县数据
   const getTowns = () => townWarningCounts.length ? [{ name: "选择全部" }].concat(townWarningCounts) : [];//是否有选择全部;
   const setTownWarningCounts = (res) => {
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const _townWarningCounts = [...res];
-    const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
-    const rootArea = props.state.userMessage.message.area;//权限数组
-    const levelRoot = root !== "province" && root !== "city";
+    const rootArea = props.rootArea;//权限数组
+    const levelRoot = props.root !== "province" && props.root !== "city";
     const rootAID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.AID) : [];//权限AID
     const afterRootTowns = levelRoot ? _townWarningCounts.filter(v => rootAID.includes(v.AID)) : _townWarningCounts;//权限之后的局站
     const towns = afterRootTowns.filter(v => v["NETTYPE"] === netTypeIndex);//固网无线网分开
-    const sortTowns = towns.sort((a, b) => a["AID"] - b["AID"])
+    const sortTowns = towns.sort((a, b) => a["AID"] - b["AID"]);
     set_townWarningCounts(sortTowns);
     areas[1].children = sortTowns;
-    props.dispatch(dispatch => {dispatch({ type: "AREA", payload: { data: areas } });});
-  }
+    props.changeDispatch("AREA", { data: areas });
+  };
   //获取数据
   const getTownsInfo = () => {
     set_refreshing(true);
     api.getTownWarningCounts("city", city).then(res => {
-      setTownWarningCounts(res)
+      setTownWarningCounts(res);
       set_refreshing(false);
     }).catch((error) => {
       if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
@@ -54,16 +52,14 @@ const SelectTown = (props) => {
   //改变或选择区县
   const changeTown = (item) => {
     const checkTown = item.item.name; //选中的区县
-    const areas = [...props.state.areas.data]; //地市信息
+    const areas = [...props.area]; //地市信息
     const nowTown = areas[2].name; //现在所在的区县
     if (checkTown === "选择全部") {
       if (nowTown) {
         areas[3] = { level: "station" };
         areas[2] = { level: "town" };
         areaDispatch("city", 1, areas, city, 2, item);//更改为市级
-        props.dispatch(dispatch => {
-          dispatch({ type: "TITLE", payload: { title: props.from ? props.from : "告警列表" } });
-        });//改变路由title
+        props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
         abort.abortTownWarningCounts && abort.abortTownWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
@@ -83,9 +79,7 @@ const SelectTown = (props) => {
   };
   //区域变更
   const areaDispatch = (level, index, areas, name, page, item) => {
-    props.dispatch(dispatch => {
-      dispatch({ type: "AREA", payload: { data: areas, level, index } });
-    });
+    props.changeDispatch("AREA", { data: areas, level, index });
     props.changeArea({ level, name, page, item });
   };
   const renderTownRow = (item) => {
@@ -145,7 +139,7 @@ const SelectTown = (props) => {
     );
   };
   useEffect(() => {
-    if (city) {
+    if (city && !townWarningCounts.length) {
       getTownsInfo();
     }
     return () => {
@@ -214,4 +208,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   }
 });
-export default connect(state => ({ state }))(SelectTown);
+export default SelectTown;
