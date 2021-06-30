@@ -114,11 +114,11 @@ const LoginPage = props => {
   /*存储用户信息*/
   const saveUserMessage = (res) => {
     const decoded = jwtDecode(res.token);//解密token
+    initSetArea(decoded["root_level"], res.area);
     props.dispatch(dispatch => {
       dispatch({ type: "TOKEN", payload: { value: res.token, decoded } });
       dispatch({ type: "USER", payload: { message: { ...res } } });
     });
-    initSetArea(decoded["root_level"], res.area);
     setCookie("token", res.token);//存token
     props.navigation.navigate("HomePage");//打开页面
     set_phoneOrMailCode("");
@@ -137,22 +137,37 @@ const LoginPage = props => {
         break;
       case "town":
         const sortTown = area.sort((a, b) => a["AID"] - b["AID"]);
-        tempAreas[1].name = sortTown[0]["city"];
-        tempAreas[2].name = sortTown[0]["town"];
-        tempAreas[2].AID = sortTown[0]["AID"];
-        tempAreas[2].netType = sortTown[0]["NETTYPE"];
+        tempAreas[1] = {
+          level: "city",
+          name: sortTown[0]["city"]
+        };
+        tempAreas[2] = {
+          level: "town",
+          name: sortTown[0]["town"],
+          AID: sortTown[0]["AID"],
+          netType: sortTown[0]["NETTYPE"],
+        };
         props.dispatch(dispatch => {
           dispatch({ type: "AREA", payload: { data: tempAreas, level: "town", index: 2 } });
         });
         break;
       case "station":
         const sortStation = area.sort((a, b) => a["SUID"] - b["SUID"]);
-        tempAreas[1].name = sortStation[0]["city"];
-        tempAreas[2].name = sortStation[0]["town"];
-        tempAreas[2].AID = sortStation[0]["AID"];
-        tempAreas[2].netType = sortStation[0]["NETTYPE"];
-        tempAreas[3].name = sortStation[0]["station"];
-        tempAreas[3].SUID = sortStation[0]["SUID"];
+        tempAreas[1] = {
+          level: "city",
+          name: sortStation[0]["city"]
+        };
+        tempAreas[2] = {
+          level: "town",
+          name: sortStation[0]["town"],
+          AID: sortStation[0]["AID"],
+          netType: sortStation[0]["NETTYPE"],
+        };
+        tempAreas[3] = {
+          level: "station",
+          name: sortStation[0]["station"],
+          SUID: sortStation[0]["SUID"],
+        };
         props.dispatch(dispatch => {
           dispatch({ type: "AREA", payload: { data: tempAreas, level: "station", index: 3 } });
         });

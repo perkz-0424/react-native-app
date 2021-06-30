@@ -12,7 +12,7 @@ const SelectTown = (props) => {
   const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
   const netType = props.area.filter(v => v.level === "town")[0].netType;//选中的区县网络类型
-  const netTypeInit = netType ? netType : 0;//初始化的网络类型在哪页
+  const netTypeInit = netType ? netType : 0;//初始化的网络类型
   const [townWarningCounts, set_townWarningCounts] = useState(initTownWarningCounts);//告警数量
   const [refreshing, set_refreshing] = useState(false);//是否刷新
   const tabs = [{ name: "固网", netType: 0 }, { name: "无线网", netType: 1 }];//固网无线网选项
@@ -23,26 +23,26 @@ const SelectTown = (props) => {
     set_netTypeIndex(index);
   };
   //区县数据
-  const getTowns = () => {
+  const getTowns = () => townWarningCounts.length ? [{ name: "选择全部" }].concat(townWarningCounts) : [];//是否有选择全部;
+  const setTownWarningCounts = (res) => {
+    const areas = [...props.state.areas.data]; //地市信息
+    const _townWarningCounts = [...res];
     const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
     const rootArea = props.state.userMessage.message.area;//权限数组
     const levelRoot = root !== "province" && root !== "city";
     const rootAID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.AID) : [];//权限AID
-    const afterRootTowns = levelRoot ? townWarningCounts.filter(v => rootAID.includes(v.AID)) : townWarningCounts;//权限之后的局站
+    const afterRootTowns = levelRoot ? _townWarningCounts.filter(v => rootAID.includes(v.AID)) : _townWarningCounts;//权限之后的局站
     const towns = afterRootTowns.filter(v => v["NETTYPE"] === netTypeIndex);//固网无线网分开
-    return towns.length ? [{ name: "选择全部" }].concat(towns.sort((a, b) => a["AID"] - b["AID"])) : [];//是否有选择全部
-  };
+    const sortTowns = towns.sort((a, b) => a["AID"] - b["AID"])
+    set_townWarningCounts(sortTowns);
+    areas[1].children = sortTowns;
+    props.dispatch(dispatch => {dispatch({ type: "AREA", payload: { data: areas } });});
+  }
   //获取数据
   const getTownsInfo = () => {
-
     set_refreshing(true);
-    const areas = [...props.state.areas.data]; //地市信息
     api.getTownWarningCounts("city", city).then(res => {
-      areas[1].children = res;
-      set_townWarningCounts(res);
-      props.dispatch(dispatch => {
-        dispatch({ type: "AREA", payload: { data: areas } });
-      });
+      setTownWarningCounts(res)
       set_refreshing(false);
     }).catch((error) => {
       if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
@@ -58,33 +58,25 @@ const SelectTown = (props) => {
     const nowTown = areas[2].name; //现在所在的区县
     if (checkTown === "选择全部") {
       if (nowTown) {
-        delete areas[3].name;
-        delete areas[3].info;
-        delete areas[3].SUID;
-        delete areas[2].name;
-        delete areas[2].info;
-        delete areas[2].netType;
-        delete areas[2].children;
-        delete areas[2].AID;
+        areas[3] = { level: "station" };
+        areas[2] = { level: "town" };
         areaDispatch("city", 1, areas, city, 2, item);//更改为市级
         props.dispatch(dispatch => {
-          dispatch({
-            type: "TITLE",
-            payload: { title: props.from ? props.from : "告警列表" }
-          });
+          dispatch({ type: "TITLE", payload: { title: props.from ? props.from : "告警列表" } });
         });//改变路由title
         abort.abortTownWarningCounts && abort.abortTownWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
     } else {
       if (checkTown !== nowTown) {
-        areas[2].netType = item.item["NETTYPE"];
-        areas[2].name = checkTown;
-        areas[2].info = item;
-        areas[2].AID = item.item["AID"];
-        delete areas[3].name;
-        delete areas[3].info;
-        delete areas[3].SUID;
+        areas[2] = {
+          level: "town",
+          netType: item.item["NETTYPE"],
+          name: checkTown,
+          info: item,
+          AID: item.item["AID"],
+        };
+        areas[3] = { level: "station" };
         areaDispatch("town", 2, areas, checkTown, 3, item);//更改为区县级
       }
     }

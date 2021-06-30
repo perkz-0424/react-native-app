@@ -13,18 +13,10 @@ const SelectProvince = (props) => {
     const nowProvince = areas[0].name; //现在所在的省级
     if (province !== nowProvince) {
       //省级改变，市级、区级、局站级都重置
-      areas[0].name = province;
-      delete areas[1].name;
-      delete areas[1].info;
-      delete areas[1].children;
-      delete areas[2].name;
-      delete areas[2].info;
-      delete areas[2].netType;
-      delete areas[2].AID;
-      delete areas[2].children;
-      delete areas[3].name;
-      delete areas[3].info;
-      delete areas[3].SUID;
+      areas[0] = { level: "province", name: province };
+      areas[1] = { level: "city" };
+      areas[2] = { level: "town" };
+      areas[3] = { level: "station" };
       props.dispatch(dispatch => {
         dispatch({ type: "AREA", payload: { data: areas, level: "province", index: 0 } });
       });

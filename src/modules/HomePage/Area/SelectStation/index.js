@@ -18,24 +18,24 @@ const SelectStation = (props) => {
   const [refreshing, set_refreshing] = useState(false);//是否刷新
 
   //局站处理
-  const getStations = () => {
+  const getStations = () => [{ name: "选择全部" }].concat(stationWarningCounts);
+  const setStationWarningCounts = (res) => {
+    const areas = [...props.state.areas.data]; //地市信息
+    const _stationWarningCounts = [...res];
     const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
     const rootArea = props.state.userMessage.message.area;//权限数组
     const levelRoot = root !== "province" && root !== "city" && root !== "town";//排除
     const rootSUID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.SUID) : [];//权限SUID
-    const afterRootStations = levelRoot ? stationWarningCounts.filter(v => rootSUID.includes(v.SUID)) : stationWarningCounts;//权限的局站
-    return [{ name: "选择全部" }].concat(afterRootStations);
+    const afterRootStations = levelRoot ? _stationWarningCounts.filter(v => rootSUID.includes(v.SUID)) : _stationWarningCounts;//权限的局站
+    set_stationWarningCounts(afterRootStations);
+    areas[2].children = afterRootStations;
+    props.dispatch(dispatch => {dispatch({ type: "AREA", payload: { data: areas } });});
   };
   //获取局站告警
   const getStationWarningCounts = () => {
     set_refreshing(true);
-    const areas = [...props.state.areas.data]; //地市信息
     api.getStationByAIDAndNetType(AID, townNetType).then(res => {
-      areas[2].children = res.response;
-      set_stationWarningCounts(res.response);
-      props.dispatch(dispatch => {
-        dispatch({ type: "AREA", payload: { data: areas } });
-      });
+      setStationWarningCounts(res.response);
       set_refreshing(false);
     }).catch((error) => {
       if (error.toString() !== "AbortError: Aborted") {
@@ -51,24 +51,22 @@ const SelectStation = (props) => {
     const nowStation = areas[3].name;//之前被选中的局站
     if (checkStation === "选择全部") {
       if (nowStation) {
-        delete areas[3].name;
-        delete areas[3].info;
-        delete areas[3].SUID;
+        areas[3] = { level: "station" };
         areaDispatch("town", 2, areas, town, 3, item);
       }
     } else {
       if (checkStation !== nowStation) {
-        areas[3].name = checkStation;
-        areas[3].info = item;
-        areas[3].SUID = item.item["SUID"];
+        areas[3] = {
+          level: "station",
+          name: checkStation,
+          info: item,
+          SUID: item.item["SUID"]
+        };
         areaDispatch("station", 3, areas, checkStation, 3, item);
       }
     }
     props.dispatch(dispatch => {
-      dispatch({
-        type: "TITLE",
-        payload: { title: props.from ? props.from : "告警列表" }
-      });
+      dispatch({ type: "TITLE", payload: { title: props.from ? props.from : "告警列表" } });
     });//改变路由title
     abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     props.navigation.goBack();//返回到上一页
