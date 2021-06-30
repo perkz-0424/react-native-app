@@ -4,6 +4,7 @@ import { Radio } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
+let _AID = 0;//当前的AID
 const RadioItem = Radio.RadioItem;
 const SelectStation = (props) => {
   const town_children = props.area.filter(v => v.level === "town")[0].children;
@@ -32,15 +33,20 @@ const SelectStation = (props) => {
   //获取局站告警
   const getStationWarningCounts = () => {
     set_refreshing(true);
-    api.getStationByAIDAndNetType(AID, townNetType).then(res => {
-      setStationWarningCounts(res.response);
+    if (AID) {
+      api.getStationByAIDAndNetType(AID, townNetType).then(res => {
+        setStationWarningCounts(res.response);
+        set_refreshing(false);
+        _AID = AID;
+      }).catch((error) => {
+        if (error.toString() !== "AbortError: Aborted") {
+          errorMessage("获取数据失败");
+        }
+        set_refreshing(false);
+      });
+    } else {
       set_refreshing(false);
-    }).catch((error) => {
-      if (error.toString() !== "AbortError: Aborted") {
-        errorMessage("获取数据失败");
-      }
-      set_refreshing(false);
-    });
+    }
   };
   //选择局站
   const changeStation = (item) => {
@@ -118,7 +124,7 @@ const SelectStation = (props) => {
     );
   };
   useEffect(() => {
-    if (town && !stationWarningCounts.length) {
+    if (town && AID !== _AID) {
       getStationWarningCounts();
     }
     return () => {

@@ -76,7 +76,10 @@ const SelectCity = (props) => {
     props.changeDispatch("AREA", { data: areas });
   };
   //获取城市数据
-  const getCities = () => [{ name: "选择全部" }].concat(cityWarningCounts);
+  const getCities = () => {
+    const cities = props.root === "province" ? [{ name: "选择全部" }] : [];
+    return cities.concat(cityWarningCounts);
+  };
   const renderCityRow = (item) => {
     return (
       <RadioItem

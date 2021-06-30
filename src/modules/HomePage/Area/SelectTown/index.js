@@ -4,6 +4,7 @@ import { Radio, Tabs } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
+let _city = "";//当前城市
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
@@ -22,7 +23,11 @@ const SelectTown = (props) => {
     set_netTypeIndex(index);
   };
   //区县数据
-  const getTowns = () => townWarningCounts.length ? [{ name: "选择全部" }].concat(townWarningCounts) : [];//是否有选择全部;
+  const getTowns = () => {
+    const netTypeTowns = townWarningCounts.filter(v => v["NETTYPE"] === netTypeIndex);
+    const towns = (props.root === "province" || props.root === "city") && netTypeTowns.length ? [{ name: "选择全部" }] : [];
+    return towns.concat(netTypeTowns);
+  };//是否有选择全部;
   const setTownWarningCounts = (res) => {
     const areas = [...props.area]; //地市信息
     const _townWarningCounts = [...res];
@@ -30,24 +35,28 @@ const SelectTown = (props) => {
     const levelRoot = props.root !== "province" && props.root !== "city";
     const rootAID = levelRoot && Object.prototype.toString.call(rootArea) === "[object Array]" ? rootArea.map(item => item.AID) : [];//权限AID
     const afterRootTowns = levelRoot ? _townWarningCounts.filter(v => rootAID.includes(v.AID)) : _townWarningCounts;//权限之后的局站
-    const towns = afterRootTowns.filter(v => v["NETTYPE"] === netTypeIndex);//固网无线网分开
-    const sortTowns = towns.sort((a, b) => a["AID"] - b["AID"]);
-    set_townWarningCounts(sortTowns);
-    areas[1].children = sortTowns;
+    const afterSort = afterRootTowns.sort((a, b) => a["AID"] - b["AID"]);
+    set_townWarningCounts(afterSort);
+    areas[1].children = afterSort;
     props.changeDispatch("AREA", { data: areas });
   };
   //获取数据
   const getTownsInfo = () => {
     set_refreshing(true);
-    api.getTownWarningCounts("city", city).then(res => {
-      setTownWarningCounts(res);
+    if (city) {
+      api.getTownWarningCounts("city", city).then(res => {
+        setTownWarningCounts(res);
+        set_refreshing(false);
+        _city = city;
+      }).catch((error) => {
+        if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
+          errorMessage("获取数据失败");
+        }
+        set_refreshing(false);
+      });
+    } else {
       set_refreshing(false);
-    }).catch((error) => {
-      if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
-        errorMessage("获取数据失败");
-      }
-      set_refreshing(false);
-    });
+    }
   };
   //改变或选择区县
   const changeTown = (item) => {
@@ -139,7 +148,7 @@ const SelectTown = (props) => {
     );
   };
   useEffect(() => {
-    if (city && !townWarningCounts.length) {
+    if (city && _city !== city) {
       getTownsInfo();
     }
     return () => {
