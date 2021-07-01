@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
     color: "#999999"
   }
 });
-export default SelectCity;
+export default memo(SelectCity, (prevProps, nextProps) => (prevProps["judgeTheConditionsOfChange"] === nextProps["judgeTheConditionsOfChange"]));

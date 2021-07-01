@@ -7,6 +7,7 @@ import Person from "./modules/Person";
 import ForgetPwd from "./modules/ForgetPwd";
 import HomePage from "./modules/HomePage";
 import ForcedPasswordChange from "./modules/ForcedPasswordChange";
+import MyMessage from "./modules/MyMessage";
 
 const Stack = createStackNavigator();
 const routers = [
@@ -44,6 +45,12 @@ const routers = [
     title: "强制修改密码",
     name: "ForcedPasswordChange",
     component: ForcedPasswordChange,
+    type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "消息",
+    name: "MyMessage",
+    component: MyMessage,
     type: TransitionPresets.SlideFromRightIOS
   }
 ];

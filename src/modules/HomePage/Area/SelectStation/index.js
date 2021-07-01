@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+import React, { memo, useEffect, useMemo, useState } from "react";
+import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
-let _AID = 0;//当前的AID
+let prevAID = 0;
 const RadioItem = Radio.RadioItem;
 const SelectStation = (props) => {
   const town_children = props.area.filter(v => v.level === "town")[0].children;
@@ -14,10 +14,12 @@ const SelectStation = (props) => {
   const SUID = props.area.filter(v => v.level === "station")[0].SUID;//选中的局站的SUID
   const townNetType = props.area.filter(v => v.level === "town")[0].netType;//区县的网络类型
   const [stationWarningCounts, set_stationWarningCounts] = useState(initStationWarningCounts);//告警数量
-  let isSearch = false;
+  const [refreshing, set_refreshing] = useState(false);//是否刷新
 
   //局站处理
-  const getStations = () => [{ name: "选择全部" }].concat(stationWarningCounts);
+  const getStations = () => {
+    return [{ name: "选择全部" }].concat(stationWarningCounts);
+  };
   const setStationWarningCounts = (res) => {
     const areas = [...props.area]; //地市信息
     const _stationWarningCounts = [...res];
@@ -31,15 +33,16 @@ const SelectStation = (props) => {
   };
   //获取局站告警
   const getStationWarningCounts = () => {
-    isSearch = false;
     props.loading(true);
     if (AID) {
       api.getStationByAIDAndNetType(AID, townNetType).then(res => {
         props.loading(false);
+        set_refreshing(false);
         setStationWarningCounts(res.response);
-        _AID = AID;
+        prevAID = AID;
       }).catch((error) => {
         props.loading(false);
+        set_refreshing(false);
         if (error.toString() !== "AbortError: Aborted") {
           errorMessage("获取数据失败");
         }
@@ -49,8 +52,8 @@ const SelectStation = (props) => {
     }
   };
   const setSearchStationByKeyWords = () => {
-    isSearch = true;
     setStationWarningCounts(props.searchResult);
+    props.loading(false);
   };
   //选择局站
   const changeStation = (item) => {
@@ -140,17 +143,24 @@ const SelectStation = (props) => {
     );
   };
   useEffect(() => {
-    if (AID && _AID !== AID) {
-      getStationWarningCounts();
-      return;
-    }
+    set_stationWarningCounts(initStationWarningCounts);
     if (props.searchEndValue) {
-      setSearchStationByKeyWords();
+      setSearchStationByKeyWords();//搜索优先
+    } else {
+      /**
+       * AID不变不会去重新拿数据，数据会保留
+       * 但搜索完之后的也会保留搜索留下的数据
+       * 防止重复掉接口拿相同数据
+       * 所以加了一个下拉刷新，手动更新数据
+       * */
+      if (AID && AID !== prevAID) {
+        getStationWarningCounts();
+      }
     }
     return () => {
       abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     };
-  }, [AID, props.searchEndValue]);
+  }, [AID, props.searchEndValue, props.judgeTheConditionsOfChange]);
   return (
     <View style={{ width: "100%", flex: 1 }}>
       <View style={styles.title}>
@@ -162,6 +172,10 @@ const SelectStation = (props) => {
         keyExtractor={(item) => `station${item["SUID"]}`}
         renderItem={renderStationRow}
         initialNumToRender={16}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => {
+          set_refreshing(true);
+          getStationWarningCounts();
+        }}/>}
       />
     </View>
   );
@@ -180,4 +194,6 @@ const styles = StyleSheet.create({
     color: "#999999"
   }
 });
-export default SelectStation;
+export default memo(SelectStation, (prevProps, nextProps) => {
+  return !(prevProps["judgeTheConditionsOfChange"] !== nextProps["judgeTheConditionsOfChange"] || nextProps["searchEndValue"]);
+});

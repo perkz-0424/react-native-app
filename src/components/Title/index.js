@@ -6,6 +6,10 @@ const Title = (props) => {
   const onPress = () => {
     props.onLeftPress && props.onLeftPress();
   };
+
+  const onRightPress = () => {
+    props.onRightPress && props.onRightPress();
+  };
   let height = 0;
   if (Platform.OS === "ios") {
     if (isBangsScreen()) {
@@ -46,7 +50,18 @@ const Title = (props) => {
         }}>
           <Text style={{ fontWeight: "bold" }}>{props.title}</Text>
         </View>
-        <View style={{ width: "20%" }}/>
+        <TouchableOpacity onPress={onRightPress} style={{
+          paddingRight: 15,
+          height: "100%",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 2,
+          elevation: 2,
+          width: "20%",
+          alignItems: "flex-end"
+        }}>
+          {props.titleRight ? props.titleRight : null}
+        </TouchableOpacity>
       </View>
     </View>
   );

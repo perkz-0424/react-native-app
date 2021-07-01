@@ -8,17 +8,18 @@ import { clearAllCookie } from "../../../../assets/cookie";
 import { data } from "../../../../store/dataSource";
 
 const User = props => {
+  const userInfo = props.state.token.decoded;
   const changeTitle = (title) => {
     props.dispatch(dispatch => {
-      dispatch({
-        type: "TITLE",
-        payload: { title }
-      });
+      dispatch({ type: "TITLE", payload: { title } });
     });
   };
   const goToMyMessage = () => {
-    changeTitle("消息");
     props.navigation.navigate("MyMessage");
+  };
+  const goUserInfo = () => {
+    changeTitle("个人资料");
+    props.navigation.navigate("UserInfo", { userInfo });
   };
   const goToEngineeringManagement = () => {
     changeTitle("工程态列表");
@@ -71,16 +72,20 @@ const User = props => {
             source={require("../../../../assets/images/icon/user.png")}
           />
         </View>
-        <View style={{ paddingLeft: 20, paddingTop: 15, paddingBottom: 15 }}>
-          <View style={{ height: 35, justifyContent: "center" }}>
-            <TouchableOpacity onPress={() => {props.navigation.navigate("Login");}}>
-              <Text style={{ fontSize: 20, color: "#323A3D" }}>登录</Text>
+        {userInfo["_id"] ?
+          <View style={{ paddingLeft: 20, paddingTop: 15, paddingBottom: 15 }}>
+            <Text style={{ fontSize: 20, color: "#323A3D" }}>{userInfo["user_name"]}</Text>
+            <TouchableOpacity onPress={goUserInfo}>
+              <Text style={{ marginTop: 10, fontSize: 12, color: "#9D9FA1" }}>查看个人资料</Text>
             </TouchableOpacity>
-          </View>
-        </View>
-        <View style={{ height: 35, paddingTop: 0, paddingBottom: 10 }}>
-
-        </View>
+          </View> :
+          <View style={{ paddingLeft: 20, paddingTop: 15, paddingBottom: 15 }}>
+            <View style={{ height: 35, justifyContent: "center" }}>
+              <TouchableOpacity onPress={clearDataAndSignOut}>
+                <Text style={{ fontSize: 20, color: "#323A3D" }}>登录</Text>
+              </TouchableOpacity>
+            </View>
+          </View>}
       </View>
       <View style={{ paddingTop: 10 }}>
         <UserButton onPress={goToMyMessage}>我的消息</UserButton>

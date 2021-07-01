@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { View, Text, FlatList } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
@@ -60,4 +60,4 @@ const SelectProvince = (props) => {
     </View>
   );
 };
-export default SelectProvince;
+export default memo(SelectProvince, (prevProps, nextProps) => (prevProps["judgeTheConditionsOfChange"] === nextProps["judgeTheConditionsOfChange"]));

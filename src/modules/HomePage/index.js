@@ -5,15 +5,15 @@ import { connect } from "react-redux";
 import Title from "../../components/Title";
 import Home from "./Home";
 import Area from "./Area";
-import MyMessage from "./MyMessage";
 import EngineeringManagement from "./EngineeringManagement";
 import AboutUs from "./AboutUs";
+import UserInfo from "./UserInfo";
 import { abort } from "../../servers/Area";
 
 const Stack = createStackNavigator();
 const titles = [
   ["区域选择"],
-  ["消息", "工程态列表", "关于我们"],
+  ["工程态列表", "关于我们", "个人资料"],
   ["告警列表", "实时监控", "资源信息", "维护作业"],
   ["个人中心"]
 ];
@@ -31,12 +31,6 @@ const routers = [
     type: TransitionPresets.SlideFromRightIOS
   },
   {
-    title: "消息",
-    name: "MyMessage",
-    component: MyMessage,
-    type: TransitionPresets.SlideFromRightIOS
-  },
-  {
     title: "工程态列表",
     name: "EngineeringManagement",
     component: EngineeringManagement,
@@ -47,6 +41,12 @@ const routers = [
     name: "AboutUs",
     component: AboutUs,
     type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "个人资料",
+    name: "UserInfo",
+    component: UserInfo,
+    type: TransitionPresets.SlideFromRightIOS,
   }
 ];
 const HomePage = (props) => {
@@ -81,7 +81,7 @@ const HomePage = (props) => {
   const leftIcon = () => {
     return (
       <View style={{ display: title === "个人中心" ? "none" : "flex" }}>
-        {["区域选择", "消息", "工程态列表", "关于我们"].includes(title) ?
+        {titles[0].concat(titles[1]).includes(title) ?
           <Image
             style={{ width: 12, height: 18 }}
             source={require("../../assets/images/icon/back.png")}
@@ -101,11 +101,14 @@ const HomePage = (props) => {
     );
   };
 
+  const setTitle = (title) => {
+    return title === "个人中心" ? "" : title;
+  };
   return (
     <View
       style={{ height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25 }}>
       <Title
-        title={title === "个人中心" ? "" : props.state.titles.title}
+        title={setTitle(title)}
         onLeftPress={onAreaOrBack}
         titleLeft={leftIcon()}
       />
@@ -119,7 +122,7 @@ const HomePage = (props) => {
                 component={item.component}
                 options={{
                   headerShown: false,
-                  ...item.title,
+                  ...item.type,
                 }}
               />
             );

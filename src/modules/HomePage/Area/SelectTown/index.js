@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
 
-let _city = "";//当前城市
+let prevCity = "";//上一次搜索的城市
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
@@ -42,12 +42,13 @@ const SelectTown = (props) => {
   };
   //获取数据
   const getTownsInfo = () => {
+    set_townWarningCounts(initTownWarningCounts);
     set_refreshing(true);
     if (city) {
       api.getTownWarningCounts("city", city).then(res => {
+        prevCity = city;
         setTownWarningCounts(res);
         set_refreshing(false);
-        _city = city;
       }).catch((error) => {
         if (error.toString() !== "AbortError: Aborted") {//不是手动终止的报网络错误
           errorMessage("获取数据失败");
@@ -218,4 +219,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   }
 });
-export default SelectTown;
+export default memo(SelectTown, (prevProps, nextProps) => (prevProps["judgeTheConditionsOfChange"] === nextProps["judgeTheConditionsOfChange"]));

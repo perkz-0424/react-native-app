@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
 import { View, Keyboard, TouchableOpacity, Text, PixelRatio } from "react-native";
 import { connect } from "react-redux";
 import { SearchBar, Tabs } from "@ant-design/react-native";
@@ -21,6 +21,10 @@ const Area = props => {
   const [searchValue, set_searchValue] = useState("");
   const [searchEndValue, set_searchEndValue] = useState("");
   const [searchResult, set_searchResult] = useState([]);
+  const provinceJudge = tabs[0].name;
+  const cityJudge = `${tabs[0].name}${tabs[1].name}`;
+  const townJudge = `${tabs[0].name}${tabs[1].name}${tabs[2].name}`;
+  const stationJudge = `${tabs[0].name}${tabs[1].name}${tabs[2].name}`;
   const changeArea = ({ page }) => {
     set_page(page);
   };
@@ -49,9 +53,8 @@ const Area = props => {
       default:
     }
     api.getStationsByKeyword(params).then(res => {
-      set_loading(false);
       set_searchResult(res.list);
-      set_searchEndValue(searchValue);
+      set_searchEndValue(`${searchValue}${new Date().getTime()}`);
     }).catch(error => {
       if (error.toString() !== "AbortError: Aborted") {
         errorMessage("获取数据失败");
@@ -126,6 +129,9 @@ const Area = props => {
   const setLoading = (bool) => {
     set_loading(bool);
   };
+  const onChangeValue = useCallback((value) => {
+    set_searchValue(value);
+  }, []);
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
       <Loading loading={loading} text="加载中"/>
@@ -136,12 +142,11 @@ const Area = props => {
         keyboardType="web-search"
         onCancel={() => {
           set_searchValue("");
+          set_searchEndValue("");
           Keyboard.dismiss();
         }}
         onSubmit={onSubmit}
-        onChange={value => {
-          set_searchValue(value);
-        }}
+        onChange={onChangeValue}
       />
       <View style={{ flex: 1 }}>
         <Tabs
@@ -158,16 +163,18 @@ const Area = props => {
           animated={true}
         >
           <SelectProvince
+            judgeTheConditionsOfChange={provinceJudge}
             area={tabs}
-            navigation={props.navigation}
+            navigation={useMemo(() => (props.navigation), [])}
             changeArea={changeArea}
             rootArea={props.state.userMessage.message.area}
             root={root}
             changeDispatch={changeDispatch}
           />
           <SelectCity
+            judgeTheConditionsOfChange={cityJudge}
             area={tabs}
-            navigation={props.navigation}
+            navigation={useMemo(() => (props.navigation), [])}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
             rootArea={props.state.userMessage.message.area}
@@ -176,8 +183,9 @@ const Area = props => {
 
           />
           <SelectTown
+            judgeTheConditionsOfChange={townJudge}
             area={tabs}
-            navigation={props.navigation}
+            navigation={useMemo(() => (props.navigation), [])}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
             rootArea={props.state.userMessage.message.area}
@@ -185,8 +193,9 @@ const Area = props => {
             changeDispatch={changeDispatch}
           />
           <SelectStation
+            judgeTheConditionsOfChange={stationJudge}
             area={tabs}
-            navigation={props.navigation}
+            navigation={useMemo(() => (props.navigation), [])}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
             rootArea={props.state.userMessage.message.area}
@@ -202,4 +211,4 @@ const Area = props => {
   );
 };
 
-export default connect(state => ({ state }))(Area);
+export default connect(state => ({ state }))(memo(Area));
