@@ -69,7 +69,8 @@ const SelectTown = (props) => {
         areas[3] = { level: "station" };
         areas[2] = { level: "town" };
         areaDispatch("city", 1, areas, city, 2, item);//更改为市级
-        props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
+        const title = props.from ? props.from : "告警列表";
+        props.changeTitle(title);
         abort.abortTownWarningCounts && abort.abortTownWarningCounts();
         props.navigation.goBack();//返回到上一页
       }

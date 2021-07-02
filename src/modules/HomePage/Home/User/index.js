@@ -10,9 +10,7 @@ import { data } from "../../../../store/dataSource";
 const User = props => {
   const userInfo = props.state.token.decoded;
   const changeTitle = (title) => {
-    props.dispatch(dispatch => {
-      dispatch({ type: "TITLE", payload: { title } });
-    });
+    props.changeTitle(title);
   };
   const goToMyMessage = () => {
     props.navigation.navigate("MyMessage");
@@ -56,7 +54,6 @@ const User = props => {
     clearAllCookie();//清空cookie
     //重置数据源
     props.dispatch(dispatch => {
-      dispatch({ type: "TITLE", payload: { ...data.titles } });
       dispatch({ type: "USER", payload: { ...data.userMessage } });
       dispatch({ type: "AREA", payload: { ...data.ares } });
       dispatch({ type: "TOKEN", payload: { ...data.token } });

@@ -78,21 +78,21 @@ const MyMessage = props => {
           name="EmailList"
           options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
         >
-          {() => <EmailList changeTitle={changeTitle} navigate={props.navigation.navigate}/>}
+          {(props) => <EmailList changeTitle={changeTitle} navigate={props.navigation.navigate} {...props}/>}
         </Stack.Screen>
         <Stack.Screen
           key="邮件详情"
           name="EmailDetails"
           options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
         >
-          {() => <EmailDetails/>}
+          {(props) => <EmailDetails  {...props}/>}
         </Stack.Screen>
         <Stack.Screen
           key="写信息"
           name="WriteEmail"
           options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
         >
-          {() => <WriteEmail sendMessageInfo={sendMessageInfo}/>}
+          {(props) => <WriteEmail sendMessageInfo={sendMessageInfo} {...props}/>}
         </Stack.Screen>
       </Stack.Navigator>
     </View>

@@ -93,7 +93,8 @@ const SelectStation = (props) => {
   const areaDispatch = (level, index, areas, name, page, item) => {
     props.changeDispatch("AREA", { data: areas, level, index });
     props.changeArea({ level, name, page, item });
-    props.changeDispatch("TITLE", { title: props.from ? props.from : "告警列表" });
+    const title = props.from ? props.from : "告警列表";
+    props.changeTitle(title);
     abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
     props.navigation.goBack();//返回到上一页
   };

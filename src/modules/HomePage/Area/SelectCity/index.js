@@ -26,7 +26,7 @@ const SelectCity = (props) => {
         areas[3] = { level: "station" };
         areaDispatch("province", 0, areas, province, 1, item);//更改为省级
         const title = props.from ? props.from : "告警列表";
-        props.changeDispatch("TITLE", { title });
+        props.changeTitle(title)
         abort.abortCityWarningCounts && abort.abortCityWarningCounts();
         props.navigation.goBack();//返回到上一页
       }

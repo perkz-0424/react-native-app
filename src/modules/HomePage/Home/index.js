@@ -43,12 +43,7 @@ const bottomNav = [
 ];
 const Home = props => {
   const changeTitle = (title) => {
-    props.dispatch(dispatch => {
-      dispatch({
-        type: "TITLE",
-        payload: { title }
-      });
-    });
+    props.changeTitle(title);
   };
   const pressNavigationEvent = (name) => {
     switch (name) {
@@ -77,7 +72,7 @@ const Home = props => {
         {
           bottomNav.map((item, index) => {
             return (
-              <Tab.Screen key={index} name={item.name} component={item.component} options={{
+              <Tab.Screen key={index} name={item.name} options={{
                 tabBarButton: (props) => {
                   const color = props.accessibilityStates[0] === "selected" ? "#469af7" : "#9c9c9c";
                   return (
@@ -93,7 +88,9 @@ const Home = props => {
                   );
                 }
               }}
-              />
+              >
+                {(props) => <item.component {...props} changeTitle={changeTitle}/>}
+              </Tab.Screen>
             );
           })
         }

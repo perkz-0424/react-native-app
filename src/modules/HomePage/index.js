@@ -50,38 +50,37 @@ const routers = [
   }
 ];
 const HomePage = (props) => {
-  const area = props.state.areas.data;
-  const level = props.state.areas.level;
-  const title = props.state.titles.title;
+  const { data, level } = props.state.areas;
   const [backTitle, set_backTitle] = useState("告警列表");
-  const setArea = () => area.filter(v => v.level === level)[0].name;
+  const [homeTitle, set_homeTitle] = useState("告警列表");
+  const setArea = () => data.filter(v => v.level === level)[0].name;
   const changeTitle = (title) => {
-    props.dispatch(dispatch => {dispatch({ type: "TITLE", payload: { title } });});
+    set_homeTitle(title);
   };
   /*title左边的地域或者返回按钮*/
   const onAreaOrBack = () => {
-    if (titles[0].includes(title)) {
+    if (titles[0].includes(homeTitle)) {
       abort.abortCityWarningCounts && abort.abortCityWarningCounts();
       abort.abortTownWarningCounts && abort.abortTownWarningCounts();
       abort.abortStationByAIDAndNetType && abort.abortStationByAIDAndNetType();
       changeTitle(backTitle);
       return props.navigation.navigate("Home");
-    } else if (titles[1].includes(title)) {
+    } else if (titles[1].includes(homeTitle)) {
       changeTitle("个人中心");
       return props.navigation.navigate("User");
-    } else if (titles[2].includes(title)) {
-      set_backTitle(title);
+    } else if (titles[2].includes(homeTitle)) {
+      set_backTitle(homeTitle);
       changeTitle("区域选择");
       return props.navigation.navigate("Area", {
-        fromRouteName: title,//来自哪个页面
+        fromRouteName: homeTitle,//来自哪个页面
       });
     }
   };
 
   const leftIcon = () => {
     return (
-      <View style={{ display: title === "个人中心" ? "none" : "flex" }}>
-        {titles[0].concat(titles[1]).includes(title) ?
+      <View style={{ display: homeTitle === "个人中心" ? "none" : "flex" }}>
+        {titles[0].concat(titles[1]).includes(homeTitle) ?
           <Image
             style={{ width: 12, height: 18 }}
             source={require("../../assets/images/icon/back.png")}
@@ -108,7 +107,7 @@ const HomePage = (props) => {
     <View
       style={{ height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25 }}>
       <Title
-        title={setTitle(title)}
+        title={setTitle(homeTitle)}
         onLeftPress={onAreaOrBack}
         titleLeft={leftIcon()}
       />
@@ -119,12 +118,13 @@ const HomePage = (props) => {
               <Stack.Screen
                 key={index}
                 name={item.name}
-                component={item.component}
                 options={{
                   headerShown: false,
                   ...item.type,
                 }}
-              />
+              >
+                {(props) => <item.component {...props} changeTitle={changeTitle}/>}
+              </Stack.Screen>
             );
           })
         }

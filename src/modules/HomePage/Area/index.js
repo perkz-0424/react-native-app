@@ -170,6 +170,7 @@ const Area = props => {
             rootArea={props.state.userMessage.message.area}
             root={root}
             changeDispatch={changeDispatch}
+            changeTitle={props.changeTitle}
           />
           <SelectCity
             judgeTheConditionsOfChange={cityJudge}
@@ -180,7 +181,7 @@ const Area = props => {
             rootArea={props.state.userMessage.message.area}
             root={root}
             changeDispatch={changeDispatch}
-
+            changeTitle={props.changeTitle}
           />
           <SelectTown
             judgeTheConditionsOfChange={townJudge}
@@ -191,6 +192,7 @@ const Area = props => {
             rootArea={props.state.userMessage.message.area}
             root={root}
             changeDispatch={changeDispatch}
+            changeTitle={props.changeTitle}
           />
           <SelectStation
             judgeTheConditionsOfChange={stationJudge}
@@ -204,6 +206,7 @@ const Area = props => {
             searchEndValue={searchEndValue}
             changeDispatch={changeDispatch}
             loading={setLoading}
+            changeTitle={props.changeTitle}
           />
         </Tabs>
       </View>
