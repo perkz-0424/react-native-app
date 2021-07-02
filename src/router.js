@@ -8,6 +8,7 @@ import ForgetPwd from "./modules/ForgetPwd";
 import HomePage from "./modules/HomePage";
 import ForcedPasswordChange from "./modules/ForcedPasswordChange";
 import MyMessage from "./modules/MyMessage";
+import Addressee from "./modules/Addressee";
 
 const Stack = createStackNavigator();
 const routers = [
@@ -52,6 +53,12 @@ const routers = [
     name: "MyMessage",
     component: MyMessage,
     type: TransitionPresets.SlideFromRightIOS
+  },
+  {
+    title: "收件人",
+    name: "Addressee",
+    component: Addressee,
+    type: TransitionPresets.ScaleFromCenterAndroid
   }
 ];
 const Router = () => {

@@ -1,60 +1,134 @@
 import React, { useState } from "react";
-import { View, Text, Platform, Dimensions, Image } from "react-native";
-import { Tabs } from "@ant-design/react-native";
+import { View, Text, Platform, Dimensions, Image, StyleSheet } from "react-native";
 import Title from "../../components/Title";
 import config from "../../config";
+import EmailList from "./EmailList";
+import EmailDetails from "./EmailDetails";
+import WriteEmail from "./WriteEmail";
+import { createStackNavigator, TransitionPresets } from "@react-navigation/stack";
+
+const Stack = createStackNavigator();
 
 const MyMessage = props => {
-  const [page, set_page] = useState(0);
+  const [title, set_title] = useState("消息");
   const leftIcon = () => {
     return (
       <Image
-        style={{ width: 12, height: 18 }}
+        style={styles.img}
         source={require("../../assets/images/icon/back.png")}
       />
     );
   };
   const rightIcon = () => {
-    return (
-      <Text style={{ fontSize: 25, fontWeight: "200", color: "#2f5694" }}>+</Text>
-    );
+    switch (title) {
+      case "消息":
+        return <Text style={styles.message}>+</Text>;
+      case "写信息":
+        return <View style={styles.write}><Text style={styles.text}>发送</Text></View>;
+      default:
+        return null;
+    }
   };
-  const goWriteEmail = () => {
+  //发送邮件
+  const sendEmail = () => {
 
   };
+  const changeTitle = (message) => {
+    set_title(message);
+  };
+  const goWriteEmail = () => {
+    switch (title) {
+      case "消息":
+        changeTitle("写信息");
+        props.navigation.navigate("WriteEmail");
+        break;
+      case "写信息":
+        sendEmail();
+        break;
+      default:
+    }
+  };
   const goBack = () => {
-    props.navigation.goBack();
+    switch (title) {
+      case "消息":
+        props.navigation.goBack();
+        break;
+      default:
+        changeTitle("消息");
+        props.navigation.navigate("EmailList");
+    }
+  };
+
+  //写邮件
+  const sendMessageInfo = (message) => {
+
   };
   return (
-    <View style={{
-      height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25
-    }}>
+    <View style={styles.container}>
       <Title
-        title={"消息"}
+        title={title}
         titleLeft={leftIcon()}
         titleRight={rightIcon()}
         onLeftPress={goBack}
         onRightPress={goWriteEmail}
       />
-      <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
-        <Tabs
-          tabBarPosition="none"
-          tabs={["消息", "写信息"]}
-          page={page}
-          animated={true}
-          swipeable={true}
-          prerenderingSiblingsNumber={1}
+      <Stack.Navigator initialRouteName="EmailList">
+        <Stack.Screen
+          key="消息"
+          name="EmailList"
+          options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
         >
-          <View>
-            <Text>1</Text>
-          </View>
-          <View>
-            <Text>2</Text>
-          </View>
-        </Tabs>
-      </View>
+          {() => <EmailList changeTitle={changeTitle} navigate={props.navigation.navigate}/>}
+        </Stack.Screen>
+        <Stack.Screen
+          key="邮件详情"
+          name="EmailDetails"
+          options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
+        >
+          {() => <EmailDetails/>}
+        </Stack.Screen>
+        <Stack.Screen
+          key="写信息"
+          name="WriteEmail"
+          options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
+        >
+          {() => <WriteEmail sendMessageInfo={sendMessageInfo}/>}
+        </Stack.Screen>
+      </Stack.Navigator>
     </View>
   );
 };
+const styles = StyleSheet.create({
+  container: {
+    height: Platform.OS === "ios" ? Dimensions.get("window").height : Dimensions.get("window").height - 25
+  },
+  bg: {
+    width: "100%",
+    flex: 1,
+    backgroundColor: config.bgColor
+  },
+  img: {
+    width: 12,
+    height: 18
+  },
+  message: {
+    fontSize: 25,
+    fontWeight: "200",
+    color: "#2f5694"
+  },
+  write: {
+    width: 60,
+    height: "80%",
+    borderRadius: 4,
+    justifyContent: "center",
+    backgroundColor: "#2f5694",
+    alignItems: "center"
+  },
+  text: {
+    textAlign: "center",
+    fontSize: 12,
+    color: "#FFF"
+  }
 
+});
 export default MyMessage;
