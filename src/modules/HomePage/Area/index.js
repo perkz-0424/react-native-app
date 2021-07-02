@@ -1,7 +1,7 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
-import { View, Keyboard, Text} from "react-native";
+import { View, Keyboard, Text, TouchableOpacity, PixelRatio, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { SearchBar, Tabs } from "@ant-design/react-native";
+import { Radio, SearchBar, Tabs } from "@ant-design/react-native";
 import config from "../../../config";
 import SelectProvince from "./SelectProvince";
 import SelectCity from "./SelectCity";
@@ -11,14 +11,11 @@ import Loading from "../../../components/Loading";
 import api, { abort } from "../../../servers/Area";
 import errorMessage from "../../../components/errorMessage";
 
+const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
   const titles = props.state.areas.data.map((item) => {
-    return {
-      title: item.name ?
-        <Text numberOfLines={1} ellipsizeMode="tail">{item.name}</Text> :
-        <Text>请选择</Text>
-    };
+    return { title: item.name ? item.name : "请选择" };
   });
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
@@ -94,10 +91,38 @@ const Area = props => {
   const onChangeValue = useCallback((value) => {
     set_searchValue(value);
   }, []);
+  const renderTabBar = (tabBarPropsType) => {
+    return (
+      <View style={styles.tabStyle}>
+        {tabBarPropsType.tabs.map((item, index) => {
+            return (
+              <TouchableOpacity
+                key={index}
+                style={{
+                  ...styles.tab,
+                  borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
+                  borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
+                }}
+                onPress={() => {set_page(index);}}
+              ><Text
+                style={{
+                  fontSize: 14 / fontScale,
+                  color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
+                }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >{item.title}</Text>
+              </TouchableOpacity>
+            );
+          }
+        )}
+      </View>
+    );
+  };
   return (
     <View style={{ width: "100%", flex: 1, backgroundColor: config.bgColor }}>
-      <Loading loading={loading} text="加载中"/>
-      <SearchBar
+      {useMemo(() => <Loading loading={loading} text="加载中"/>, [loading])}
+      {useMemo(() => <SearchBar
         value={searchValue}
         clearButtonMode="never"
         placeholder="请输入局站名称"
@@ -109,16 +134,17 @@ const Area = props => {
         }}
         onSubmit={onSubmit}
         onChange={onChangeValue}
-      />
+      />, [searchValue])}
       <View style={{ flex: 1 }}>
         <Tabs
           tabBarPosition="top"
           tabs={titles}
+          renderTabBar={renderTabBar}
           tabBarBackgroundColor="#FFFFFF"
           tabBarTextStyle={{ fontSize: 15 }}
           tabBarActiveTextColor="#1D9AFF"
           tabBarInactiveTextColor="#333333"
-          tabBarUnderlineStyle={{ height: 3 }}
+          tabBarUnderlineStyle={{ height: 2 }}
           prerenderingSiblingsNumber={3}
           page={page}
           animated={true}
@@ -126,7 +152,7 @@ const Area = props => {
           <SelectProvince
             judgeTheConditionsOfChange={provinceJudge}
             area={tabs}
-            navigation={useMemo(() => (props.navigation), [])}
+            navigation={props.navigation}
             changeArea={changeArea}
             rootArea={props.state.userMessage.message.area}
             root={root}
@@ -136,7 +162,7 @@ const Area = props => {
           <SelectCity
             judgeTheConditionsOfChange={cityJudge}
             area={tabs}
-            navigation={useMemo(() => (props.navigation), [])}
+            navigation={props.navigation}
             changeArea={changeArea}
             from={props.route.params.fromRouteName}
             rootArea={props.state.userMessage.message.area}
@@ -174,5 +200,20 @@ const Area = props => {
     </View>
   );
 };
-
+const styles = StyleSheet.create({
+  tabStyle: {
+    flexDirection: "row",
+    width: "100%",
+    height: 42,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF"
+  },
+  tab: {
+    width: "25%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  }
+});
 export default connect(state => ({ state }))(memo(Area));

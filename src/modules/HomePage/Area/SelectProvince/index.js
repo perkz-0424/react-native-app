@@ -5,6 +5,7 @@ import level from "../../../../assets/js/level";
 
 const RadioItem = Radio.RadioItem;
 const SelectProvince = (props) => {
+  console.log(0)
   const province = props.area.filter(v => v.level === "province")[0].name; //现有省级（来自props）
   const changeProvince = (provinceItem) => {
     const province = provinceItem.item.name; //选中的省级

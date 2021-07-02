@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useMemo } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
@@ -7,6 +7,7 @@ import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
+  console.log(1);
   const province_children = props.area.filter(v => v.level === "province")[0].children;
   const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
   const initCityWarningCounts = province_children ? province_children : level.city.filter(v => v.parents.province === province);
@@ -26,7 +27,7 @@ const SelectCity = (props) => {
         areas[3] = { level: "station" };
         areaDispatch("province", 0, areas, province, 1, item);//更改为省级
         const title = props.from ? props.from : "告警列表";
-        props.changeTitle(title)
+        props.changeTitle(title);
         abort.abortCityWarningCounts && abort.abortCityWarningCounts();
         props.navigation.goBack();//返回到上一页
       }
@@ -114,8 +115,16 @@ const SelectCity = (props) => {
     );
   };
   useEffect(() => {
-    if (province) {
+    if (province && !props.area[0].children) {
       getCityWarningCounts();
+    } else {
+      if (!props.area[0].children.length) {
+        getCityWarningCounts();
+      } else {
+        if (!props.area[0].children[0]["SCCODE"]) {
+          getCityWarningCounts();
+        }
+      }
     }
     return () => {
       abort.abortCityWarningCounts && abort.abortCityWarningCounts();

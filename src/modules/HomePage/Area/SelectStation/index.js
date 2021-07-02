@@ -7,6 +7,7 @@ import errorMessage from "../../../../components/errorMessage";
 let prevAID = 0;
 const RadioItem = Radio.RadioItem;
 const SelectStation = (props) => {
+  console.log(3)
   const town_children = props.area.filter(v => v.level === "town")[0].children;
   const initStationWarningCounts = town_children ? town_children : [];
   const aid = props.area.filter(v => v.level === "town")[0].AID;//区县的AID

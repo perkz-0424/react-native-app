@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo } from "react";
+import React, { useEffect, useState, memo, useMemo } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
@@ -8,6 +8,7 @@ let prevCity = "";//上一次搜索的城市
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
+  console.log(2);
   const city_children = props.area.filter(v => v.level === "city")[0].children;//该城市下有的区县
   const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称
@@ -150,7 +151,7 @@ const SelectTown = (props) => {
     );
   };
   useEffect(() => {
-    if (city) {
+    if (city && prevCity !== city) {
       getTownsInfo();
     }
     return () => {
@@ -169,10 +170,10 @@ const SelectTown = (props) => {
           tabBarTextStyle={{ fontSize: 15 }}
           tabBarActiveTextColor="#1D9AFF"
           tabBarInactiveTextColor="#333333"
-          tabBarUnderlineStyle={{ width: 10, height: 3 }}
+          tabBarUnderlineStyle={{ width: 10, height: 2 }}
           prerenderingSiblingsNumber={1}
           page={netTypeIndex}
-          animated={false}
+          animated={true}
         >
           <View style={{ width: "100%", flex: 1 }}>
             <View style={styles.title}>
