@@ -78,7 +78,7 @@ const MyMessage = props => {
           name="EmailList"
           options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
         >
-          {(props) => <EmailList changeTitle={changeTitle} navigate={props.navigation.navigate} {...props}/>}
+          {(props) => <EmailList {...props} changeTitle={changeTitle} navigate={props.navigation.navigate}/>}
         </Stack.Screen>
         <Stack.Screen
           key="邮件详情"
@@ -90,9 +90,9 @@ const MyMessage = props => {
         <Stack.Screen
           key="写信息"
           name="WriteEmail"
-          options={{ headerShown: false, ...TransitionPresets.ScaleFromCenterAndroid }}
+          options={{ headerShown: false, ...TransitionPresets.SlideFromRightIOS }}
         >
-          {(props) => <WriteEmail sendMessageInfo={sendMessageInfo} {...props}/>}
+          {(props) => <WriteEmail {...props} sendMessageInfo={sendMessageInfo}/>}
         </Stack.Screen>
       </Stack.Navigator>
     </View>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, memo } from "react";
 import { View, Alert, StyleSheet, Dimensions, Text, Keyboard, Image, Platform, TouchableOpacity } from "react-native";
 import jwtDecode from "jwt-decode";
 import { Password, Normal, ImageVerificationCode, PhoneVerificationCode } from "../../../components/Input/index";
@@ -435,4 +435,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connect(state => ({ state }))(LoginPage);
+export default connect(state => ({ state }))(memo(LoginPage));

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
-import { View, Keyboard, TouchableOpacity, Text, PixelRatio } from "react-native";
+import { View, Keyboard, Text} from "react-native";
 import { connect } from "react-redux";
 import { SearchBar, Tabs } from "@ant-design/react-native";
 import config from "../../../config";
@@ -11,9 +11,15 @@ import Loading from "../../../components/Loading";
 import api, { abort } from "../../../servers/Area";
 import errorMessage from "../../../components/errorMessage";
 
-const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
+  const titles = props.state.areas.data.map((item) => {
+    return {
+      title: item.name ?
+        <Text numberOfLines={1} ellipsizeMode="tail">{item.name}</Text> :
+        <Text>请选择</Text>
+    };
+  });
   const index = props.state.areas.index + 1 === 4 ? 3 : props.state.areas.index + 1;
   const root = props.state.token.decoded ? props.state.token.decoded["root_level"] : "province";//权限
   const [page, set_page] = useState(index);
@@ -77,55 +83,11 @@ const Area = props => {
     });
   };
   useEffect(() => {
+    set_page(index);
     return () => {
       abort.abortStationsByKeyword && abort.abortStationsByKeyword();
     };
   }, []);
-  const renderTabBar = (tabBarPropsType) => {
-    return (
-      <View
-        style={{
-          flexDirection: "row",
-          width: "100%",
-          height: 42,
-          justifyContent: "space-between",
-          alignItems: "center",
-          backgroundColor: "#FFFFFF"
-        }}
-      >
-        {
-          tabBarPropsType.tabs.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={{
-                    width: "25%",
-                    height: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
-                    borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
-                  }}
-                  onPress={() => {set_page(index);}}
-                >
-                  <Text
-                    style={{
-                      fontSize: 14 / fontScale,
-                      color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
-                    }}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    {item.name ? item.name : "请选择"}
-                  </Text>
-                </TouchableOpacity>
-              );
-            }
-          )
-        }
-      </View>
-    );
-  };
   const setLoading = (bool) => {
     set_loading(bool);
   };
@@ -151,14 +113,13 @@ const Area = props => {
       <View style={{ flex: 1 }}>
         <Tabs
           tabBarPosition="top"
-          tabs={tabs}
-          renderTabBar={renderTabBar}
+          tabs={titles}
           tabBarBackgroundColor="#FFFFFF"
           tabBarTextStyle={{ fontSize: 15 }}
           tabBarActiveTextColor="#1D9AFF"
           tabBarInactiveTextColor="#333333"
-          tabBarUnderlineStyle={{ width: 10, height: 3 }}
-          prerenderingSiblingsNumber={2}
+          tabBarUnderlineStyle={{ height: 3 }}
+          prerenderingSiblingsNumber={3}
           page={page}
           animated={true}
         >
