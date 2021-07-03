@@ -134,12 +134,12 @@ const SelectTown = (props) => {
                 style={{
                   ...styles.tab,
                   borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
-                  borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
+                  borderBottomColor: tabBarPropsType.activeTab === index ? "#2f5694" : "#FFFFFF",
                 }}
                 onPress={() => {netTypeChange(item, index);}}
               ><Text style={{
                 fontSize: 14 / fontScale,
-                color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
+                color: tabBarPropsType.activeTab === index ? "#2f5694" : "#333333",
               }}
               >{item.name}</Text>
               </TouchableOpacity>

@@ -32,10 +32,8 @@ const EmailList = props => {
   </View>;
   return (
     <View style={{ width: "100%", flex: 1 }}>
-      {
-        createTabs(selectTabs)
-      }
-      <TabView value={page} onChange={set_page}>
+      {createTabs(selectTabs)}
+      <TabView value={page} onChange={set_page} animationType="timing">
         <TabView.Item style={{ width: "100%", flex: 1 }}>
           <Text h1>Recent</Text>
         </TabView.Item>

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
@@ -137,7 +137,10 @@ const SelectStation = (props) => {
           </View>
           {item.item.name === "选择全部" ? null :
             <View style={{ width: 50, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ fontSize: 13, color: "#9c9c9c" }}>{item.item["alarm_count"]}</Text>
+              <Text style={{
+                fontSize: 13,
+                color: item.item["alarm_count"] === 0 ? "#9c9c9c" : "#8C1E25"
+              }}>{item.item["alarm_count"]}</Text>
             </View>}
         </View>
       </RadioItem>
