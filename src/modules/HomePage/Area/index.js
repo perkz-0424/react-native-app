@@ -1,7 +1,8 @@
 import React, { useState, useEffect, memo, useCallback, useMemo } from "react";
-import { View, Keyboard, Text, TouchableOpacity, PixelRatio, StyleSheet } from "react-native";
+import "../../../../shim";
+import { View, Keyboard, Text, Platform, TouchableOpacity, StyleSheet } from "react-native";
 import { connect } from "react-redux";
-import { Radio, SearchBar, Tabs } from "@ant-design/react-native";
+import { SearchBar, Tabs } from "@ant-design/react-native";
 import config from "../../../config";
 import SelectProvince from "./SelectProvince";
 import SelectCity from "./SelectCity";
@@ -10,8 +11,8 @@ import SelectStation from "./SelectStation";
 import Loading from "../../../components/Loading";
 import api, { abort } from "../../../servers/Area";
 import errorMessage from "../../../components/errorMessage";
+import { Tab, TabView } from "react-native-elements";
 
-const fontScale = PixelRatio.getFontScale();
 const Area = props => {
   const tabs = props.state.areas.data;
   const titles = props.state.areas.data.map((item) => {
@@ -67,6 +68,7 @@ const Area = props => {
     });
   };
   const onSubmit = (value) => {
+    Keyboard.dismiss();
     if (value) {
       set_page(3);
       set_loading(true);
@@ -91,6 +93,24 @@ const Area = props => {
   const onChangeValue = useCallback((value) => {
     set_searchValue(value);
   }, []);
+  const createTabs = (titles) => <View style={{ borderBottomColor: "#a59f9f", borderBottomWidth: 0.2 }}>
+    <Tab value={page} onChange={set_page} indicatorStyle={{ backgroundColor: "#2f5694" }}>
+      {titles.map((item, index) => {
+        return (
+          <Tab.Item
+            key={index}
+            containerStyle={{ backgroundColor: "#FFF" }}
+            title={
+              <View style={{ height: 25, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                <Text style={{ color: index === page ? "#2f5694" : "#222222", fontSize: 13.5 }} numberOfLines={1}
+                      ellipsizeMode="tail">{item.title}</Text>
+              </View>
+            }
+          />
+        );
+      })}
+    </Tab>
+  </View>;
   const renderTabBar = (tabBarPropsType) => {
     return (
       <View style={styles.tabStyle}>
@@ -101,13 +121,13 @@ const Area = props => {
                 style={{
                   ...styles.tab,
                   borderBottomWidth: tabBarPropsType.tabBarUnderlineStyle.height,
-                  borderBottomColor: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#FFFFFF",
+                  borderBottomColor: tabBarPropsType.activeTab === index ? "#2f5694" : "#FFFFFF",
                 }}
                 onPress={() => {set_page(index);}}
               ><Text
                 style={{
-                  fontSize: 14 / fontScale,
-                  color: tabBarPropsType.activeTab === index ? "#1D9AFF" : "#333333",
+                  fontSize: 14,
+                  color: tabBarPropsType.activeTab === index ? "#2f5694" : "#333333",
                 }}
                 numberOfLines={1}
                 ellipsizeMode="tail"
@@ -136,70 +156,132 @@ const Area = props => {
         onChange={onChangeValue}
       />, [searchValue])}
       <View style={{ flex: 1 }}>
-        <Tabs
-          tabBarPosition="top"
-          tabs={titles}
-          renderTabBar={renderTabBar}
-          tabBarBackgroundColor="#FFFFFF"
-          tabBarTextStyle={{ fontSize: 15 }}
-          tabBarActiveTextColor="#1D9AFF"
-          tabBarInactiveTextColor="#333333"
-          tabBarUnderlineStyle={{ height: 2 }}
-          prerenderingSiblingsNumber={3}
-          page={page}
-          animated={true}
-        >
-          <SelectProvince
-            judgeTheConditionsOfChange={provinceJudge}
-            area={tabs}
-            navigation={props.navigation}
-            changeArea={changeArea}
-            rootArea={props.state.userMessage.message.area}
-            root={root}
-            changeDispatch={changeDispatch}
-            changeTitle={props.changeTitle}
-          />
-          <SelectCity
-            judgeTheConditionsOfChange={cityJudge}
-            area={tabs}
-            navigation={props.navigation}
-            changeArea={changeArea}
-            from={props.route.params.fromRouteName}
-            rootArea={props.state.userMessage.message.area}
-            root={root}
-            changeDispatch={changeDispatch}
-            changeTitle={props.changeTitle}
-          />
-          <SelectTown
-            judgeTheConditionsOfChange={townJudge}
-            area={tabs}
-            navigation={useMemo(() => (props.navigation), [])}
-            changeArea={changeArea}
-            from={props.route.params.fromRouteName}
-            rootArea={props.state.userMessage.message.area}
-            root={root}
-            changeDispatch={changeDispatch}
-            changeTitle={props.changeTitle}
-          />
-          <SelectStation
-            judgeTheConditionsOfChange={stationJudge}
-            area={tabs}
-            navigation={useMemo(() => (props.navigation), [])}
-            changeArea={changeArea}
-            from={props.route.params.fromRouteName}
-            rootArea={props.state.userMessage.message.area}
-            root={root}
-            searchResult={searchResult}
-            searchEndValue={searchEndValue}
-            changeDispatch={changeDispatch}
-            loading={setLoading}
-            changeTitle={props.changeTitle}
-          />
-        </Tabs>
+        {/*<Tabs*/}
+        {/*  tabBarPosition="top"*/}
+        {/*  tabs={titles}*/}
+        {/*  renderTabBar={renderTabBar}*/}
+        {/*  tabBarBackgroundColor="#FFFFFF"*/}
+        {/*  tabBarTextStyle={{ fontSize: 15 }}*/}
+        {/*  tabBarActiveTextColor="#1D9AFF"*/}
+        {/*  tabBarInactiveTextColor="#333333"*/}
+        {/*  tabBarUnderlineStyle={{ height: 2 }}*/}
+        {/*  prerenderingSiblingsNumber={3}*/}
+        {/*  page={page}*/}
+        {/*  animated={true}*/}
+        {/*>*/}
+        {/*  <SelectProvince*/}
+        {/*    judgeTheConditionsOfChange={provinceJudge}*/}
+        {/*    area={tabs}*/}
+        {/*    navigation={props.navigation}*/}
+        {/*    changeArea={changeArea}*/}
+        {/*    rootArea={props.state.userMessage.message.area}*/}
+        {/*    root={root}*/}
+        {/*    changeDispatch={changeDispatch}*/}
+        {/*    changeTitle={props.changeTitle}*/}
+        {/*  />*/}
+        {/*  <SelectCity*/}
+        {/*    judgeTheConditionsOfChange={cityJudge}*/}
+        {/*    area={tabs}*/}
+        {/*    navigation={props.navigation}*/}
+        {/*    changeArea={changeArea}*/}
+        {/*    from={props.route.params.fromRouteName}*/}
+        {/*    rootArea={props.state.userMessage.message.area}*/}
+        {/*    root={root}*/}
+        {/*    changeDispatch={changeDispatch}*/}
+        {/*    changeTitle={props.changeTitle}*/}
+        {/*  />*/}
+        {/*  <SelectTown*/}
+        {/*    judgeTheConditionsOfChange={townJudge}*/}
+        {/*    area={tabs}*/}
+        {/*    navigation={props.navigation}*/}
+        {/*    changeArea={changeArea}*/}
+        {/*    from={props.route.params.fromRouteName}*/}
+        {/*    rootArea={props.state.userMessage.message.area}*/}
+        {/*    root={root}*/}
+        {/*    changeDispatch={changeDispatch}*/}
+        {/*    changeTitle={props.changeTitle}*/}
+        {/*  />*/}
+        {/*  <SelectStation*/}
+        {/*    judgeTheConditionsOfChange={stationJudge}*/}
+        {/*    area={tabs}*/}
+        {/*    navigation={props.navigation}*/}
+        {/*    changeArea={changeArea}*/}
+        {/*    from={props.route.params.fromRouteName}*/}
+        {/*    rootArea={props.state.userMessage.message.area}*/}
+        {/*    root={root}*/}
+        {/*    searchResult={searchResult}*/}
+        {/*    searchEndValue={searchEndValue}*/}
+        {/*    changeDispatch={changeDispatch}*/}
+        {/*    loading={setLoading}*/}
+        {/*    changeTitle={props.changeTitle}*/}
+        {/*  />*/}
+        {/*</Tabs>*/}
+        <View style={{ flex: 1 }}>
+          {createTabs(titles)}
+          <View style={{ flex: 1, width: "100%" }}>
+            <TabView value={page} onChange={set_page} animationType="timing">
+              <TabView.Item style={{ width: "100%", flex: 1 }}>
+                <SelectProvince
+                  judgeTheConditionsOfChange={provinceJudge}
+                  area={tabs}
+                  navigation={props.navigation}
+                  changeArea={changeArea}
+                  rootArea={props.state.userMessage.message.area}
+                  root={root}
+                  changeDispatch={changeDispatch}
+                  changeTitle={props.changeTitle}
+                />
+              </TabView.Item>
+              <TabView.Item style={{ width: "100%", flex: 1 }}>
+                <SelectCity
+                  judgeTheConditionsOfChange={cityJudge}
+                  area={tabs}
+                  navigation={props.navigation}
+                  changeArea={changeArea}
+                  from={props.route.params.fromRouteName}
+                  rootArea={props.state.userMessage.message.area}
+                  root={root}
+                  changeDispatch={changeDispatch}
+                  changeTitle={props.changeTitle}
+                />
+              </TabView.Item>
+              <TabView.Item style={{ width: "100%", flex: 1 }}>
+                <SelectTown
+                  judgeTheConditionsOfChange={townJudge}
+                  area={tabs}
+                  navigation={props.navigation}
+                  changeArea={changeArea}
+                  from={props.route.params.fromRouteName}
+                  rootArea={props.state.userMessage.message.area}
+                  root={root}
+                  changeDispatch={changeDispatch}
+                  changeTitle={props.changeTitle}
+                />
+              </TabView.Item>
+              <TabView.Item style={{ width: "100%", flex: 1 }}>
+                <SelectStation
+                  judgeTheConditionsOfChange={stationJudge}
+                  area={tabs}
+                  navigation={props.navigation}
+                  changeArea={changeArea}
+                  from={props.route.params.fromRouteName}
+                  rootArea={props.state.userMessage.message.area}
+                  root={root}
+                  searchResult={searchResult}
+                  searchEndValue={searchEndValue}
+                  changeDispatch={changeDispatch}
+                  loading={setLoading}
+                  changeTitle={props.changeTitle}
+                />
+              </TabView.Item>
+            </TabView>
+          </View>
+        </View>
       </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   tabStyle: {
     flexDirection: "row",

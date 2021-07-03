@@ -8,7 +8,6 @@ let prevCity = "";//上一次搜索的城市
 const RadioItem = Radio.RadioItem;
 const fontScale = PixelRatio.getFontScale();
 const SelectTown = (props) => {
-  console.log(2);
   const city_children = props.area.filter(v => v.level === "city")[0].children;//该城市下有的区县
   const initTownWarningCounts = city_children ? city_children : [];//初始化城市信息
   const city = props.area.filter(v => v.level === "city")[0].name;//选中的城市名称

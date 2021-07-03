@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, useMemo } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { View, Text, FlatList, StyleSheet, Image, RefreshControl } from "react-native";
 import { Radio } from "@ant-design/react-native";
 import level from "../../../../assets/js/level";
@@ -7,7 +7,6 @@ import errorMessage from "../../../../components/errorMessage";
 
 const RadioItem = Radio.RadioItem;
 const SelectCity = (props) => {
-  console.log(1);
   const province_children = props.area.filter(v => v.level === "province")[0].children;
   const province = props.area.filter(v => v.level === "province")[0].name;//省份名称
   const initCityWarningCounts = province_children ? province_children : level.city.filter(v => v.parents.province === province);
@@ -137,13 +136,15 @@ const SelectCity = (props) => {
         <Text style={styles.fontStyle}>地区名称</Text>
         <Text style={styles.fontStyle}>告警数量</Text>
       </View>
-      <FlatList
-        data={getCities()}
-        keyExtractor={(item) => item.name}
-        renderItem={renderCityRow}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getCityWarningCounts}/>}
-        initialNumToRender={12}
-      />
+      <View style={{ width: "100%", flex: 1, }}>
+        <FlatList
+          data={getCities()}
+          keyExtractor={(item) => item.name}
+          renderItem={renderCityRow}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getCityWarningCounts}/>}
+          initialNumToRender={12}
+        />
+      </View>
     </View>
   );
 };
