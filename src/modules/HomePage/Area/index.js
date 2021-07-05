@@ -14,12 +14,11 @@ import errorMessage from "../../../components/errorMessage";
 import { Tab, TabView } from "react-native-elements";
 
 /**
- * Tab - ios和android分开写的说明：
+ * Tab - ios和android分开写的说明(ios选用ant-design；android选用react-native-elements)
  * 1.react-native-elements：阻止了ios的FlatList下拉刷新事件，以及存在无法去掉的改组件的android特色按下样式，渲染顺序1、2、3、4无法被改变。
  * 2.ant-design：ios是完美的，android的低版本Tabs的onChange事件存在过渡回调，ios调一遍，android调三遍，而且没法避免去渲染前一个块。
  * 3.react-native-scrollable-tab-view：由于Tab里面的文字是要改变的，而该组件是根据唯一的title值去渲染组件，文字不可以被改变，所以不符合该场景。
  * 4.kitten：存在window is undefined的问题。
- * 综上：ios选用ant-design；android选用react-native-elements。
  * **/
 const Area = props => {
   const tabs = props.state.areas.data;
@@ -108,12 +107,13 @@ const Area = props => {
           <Tab.Item
             key={index}
             containerStyle={{ backgroundColor: "#FFF" }}
-            title={
-              <View style={{ height: 25, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                <Text style={{ color: index === page ? "#2f5694" : "#222222", fontSize: 13.5 }} numberOfLines={1}
-                      ellipsizeMode="tail">{item.title}</Text>
-              </View>
-            }
+            title={<View style={{ height: 25, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+              <Text
+                style={{ color: index === page ? "#2f5694" : "#222222", fontSize: 13.5 }} numberOfLines={1}
+                ellipsizeMode="tail">
+                {item.title}
+              </Text>
+            </View>}
           />
         );
       })}
