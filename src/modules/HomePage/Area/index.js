@@ -19,6 +19,11 @@ import { Tab, TabView } from "react-native-elements";
  * 2.ant-design：ios是完美的，android的低版本Tabs的onChange事件存在过渡回调，ios调一遍，android调三遍，而且没法避免去渲染前一个块。
  * 3.react-native-scrollable-tab-view：由于Tab里面的文字是要改变的，而该组件是根据唯一的title值去渲染组件，文字不可以被改变，所以不符合该场景。
  * 4.kitten：存在window is undefined的问题。
+ * 5.RNUI：的文档不全，但应该可以兼容
+ * 6.Native-Base： ios 滚动条不滑动
+ * 7.bee-shell：（美团） Tab不是滑动的
+ * 8.teaset：没用过
+ * 9.react-native-tab-view
  * **/
 const Area = props => {
   const tabs = props.state.areas.data;
