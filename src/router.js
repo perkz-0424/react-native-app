@@ -9,7 +9,7 @@ import HomePage from "./modules/HomePage";
 import ForcedPasswordChange from "./modules/ForcedPasswordChange";
 import MyMessage from "./modules/MyMessage";
 import Addressee from "./modules/Addressee";
-import TabViewExample from "./modules/Demo";
+import Demo from "./modules/Demo";
 
 const Stack = createStackNavigator();
 const routers = [
@@ -64,7 +64,7 @@ const routers = [
   {
     title: "测试",
     name: "Demo",
-    component: TabViewExample,
+    component: Demo,
     type: TransitionPresets.ScaleFromCenterAndroid
   }
 ];

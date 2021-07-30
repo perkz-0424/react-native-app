@@ -23,7 +23,7 @@ import { Tab, TabView } from "react-native-elements";
  * 6.Native-Base： ios 滚动条不滑动
  * 7.bee-shell：（美团） Tab不是滑动的
  * 8.teaset：没用过
- * 9.react-native-tab-view
+ * 9.react-native-tab-view 邮箱用了
  * **/
 const Area = props => {
   const tabs = props.state.areas.data;
@@ -183,7 +183,7 @@ const Area = props => {
               tabBarUnderlineStyle={{ height: 2 }}
               prerenderingSiblingsNumber={1}
               page={page}
-              animated={true}>
+              animated={false}>
               <SelectProvince
                 judgeTheConditionsOfChange={provinceJudge}
                 area={tabs}
@@ -231,7 +231,7 @@ const Area = props => {
           <View style={{ flex: 1 }}>
             {createTabs(titles)}
             <View style={{ flex: 1, width: "100%" }}>
-              <TabView value={page} onChange={set_page} animationType="timing">
+              <TabView value={page} onChange={set_page} animationType="timing" animationConfig={{duration: 0}}>
                 <TabView.Item style={{ width: "100%", flex: 1 }}>
                   <SelectProvince
                     judgeTheConditionsOfChange={provinceJudge}

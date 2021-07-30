@@ -10,9 +10,9 @@ const initialLayout = { width: "100%", flex: 1, alignItems: "center" };
 const EmailList = props => {
   const userName = props.state.userMessage.message.name;//用户名
   const [selectTabs] = useState([
-    { title: "收件箱", amount: 0, key: "inbox", index: 0 },
-    { title: "发件箱", amount: 0, key: "outbox", index: 1 },
-    { title: "系统信息", amount: 0, key: "public", index: 2 }
+    { index: 0, amount: 0, key: "inbox", title: "收件箱" },
+    { index: 1, amount: 0, key: "outbox", title: "发件箱" },
+    { index: 2, amount: 0, key: "public", title: "系统信息" }
   ]);//amount
   const [page, set_page] = useState(0);
   const [inboxMessage, set_inboxMessage] = useState([]);//收件箱的数据
@@ -102,8 +102,7 @@ const EmailList = props => {
       <View style={{ flex: 1, width: "100%", position: "relative", zIndex: 20 }}>
         {!finish ? <View style={{ width: "100%", alignItems: "center" }}>
           <Text style={{ color: "#6c6c6c", fontSize: 13 }}>加载中...</Text>
-        </View> : null}
-        <View style={{ flex: 1, width: "100%" }}>
+        </View> : <View style={{ flex: 1, width: "100%" }}>
           {item.length ? <View style={{ flex: 1, width: "100%" }}>
             <FlatList
               style={{ flex: 1 }}
@@ -118,27 +117,34 @@ const EmailList = props => {
                   </TouchableOpacity>
                 );
               }}/>
-          </View> : <View style={{ flex: 1, width: "100%" }}>
-
+          </View> : <View style={{ flex: 1, width: "100%", justifyContent: "center", alignItems: "center" }}>
+            <Text>无数据</Text>
           </View>}
-        </View>
+        </View>}
+
       </View>
     );
   };
 
   const screens = () => ({
-    inbox: () => useMemo(() => renderItem(inboxMessage, finishInboxInit, "inbox"), [inPage, finishInboxInit]),
-    outbox: () => useMemo(() => renderItem(outboxMessage, finishOutboxInit, "outbox"), [outPage, finishOutboxInit]),
-    public: () => useMemo(() => renderItem(publicMailMessage, finishPublicInit, "public"), [publicPage, finishPublicInit])
+    inbox: () => useMemo(
+      () => renderItem(inboxMessage, finishInboxInit, "inbox"),
+      [inPage, finishInboxInit]
+    ),
+    outbox: () => useMemo(
+      () => renderItem(outboxMessage, finishOutboxInit, "outbox"),
+      [outPage, finishOutboxInit]
+    ),
+    public: () => useMemo(
+      () => renderItem(publicMailMessage, finishPublicInit, "public"),
+      [publicPage, finishPublicInit]
+    )
   });
 
   const renderLabel = useCallback((item) => {
     return (
       <View key={item.route.key} style={{ width: "100%", flexDirection: "row", alignItems: "center" }}>
-        <Text style={{
-          fontSize: 13,
-          color: item.route.index === page ? "#2f5694" : "#222",
-        }}>{item.route.title}</Text>
+        <Text style={{ fontSize: 13, color: "#222" }}>{item.route.title}</Text>
         <Text style={{ fontSize: 11, color: "#2f5694", marginLeft: 5 }}>{item.route.amount}</Text>
       </View>
     );
@@ -154,9 +160,12 @@ const EmailList = props => {
           <TabBar
             {...props}
             pressColor="#F1F1F1"
+            pressOpacity={0}
+            activeColor="#2f5694"
+            inactiveColor="#222"
             style={{ backgroundColor: "#FFF", width: "100%" }}
             labelStyle={{ fontSize: 13 }}
-            indicatorStyle={{ backgroundColor: "#2f5694" }}
+            indicatorStyle={{ backgroundColor: "#2f5694", height: 2 }}
             contentContainerStyle={{ height: 38, alignItems: "center" }}
             renderLabel={renderLabel}
             scrollEnabled={false}

@@ -7,6 +7,28 @@ import SDHPicker from "../../components/SDHPicker/index";
 import { Password, Normal, PhoneVerificationCode, ImageVerificationCode } from "../../components/Input/index";
 import { connect } from "react-redux";
 
+const icons = {
+  phone: {
+    src: require("../../assets/images/SDH/phone.png"),
+    style: { width: 14, height: 18 }
+  },
+  code: {
+    src: require("../../assets/images/SDH/code.png"),
+    style: { width: 16, height: 19 }
+  },
+  id: {
+    src: require("../../assets/images/SDH/id.png"),
+    style: { width: 17, height: 14 }
+  },
+  mail: {
+    src: require("../../assets/images/SDH/mailIcon.png"),
+    style: { width: 18, height: 14 }
+  },
+  password: {
+    src: require("../../assets/images/SDH/password.png"),
+    style: { width: 15.5, height: 18, marginLeft: 1 }
+  }
+};
 const ForgetPwd = props => {
   const [phoneOrMail, set_phoneOrMail] = useState("");
   const [imageCode, set_imageCode] = useState("");//图形码
@@ -60,54 +82,14 @@ const ForgetPwd = props => {
 
   };
   const leftIcon = (type) => {
-    switch (type) {
-      case "phone":
-        return (
-          <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 14, height: 18 }}
-              source={require("../../assets/images/SDH/phone.png")}
-            />
-          </View>
-        );
-      case "code":
-        return (
-          <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 16, height: 19 }}
-              source={require("../../assets/images/SDH/code.png")}
-            />
-          </View>
-        );
-      case "id":
-        return (
-          <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 17, height: 14 }}
-              source={require("../../assets/images/SDH/id.png")}
-            />
-          </View>
-        );
-      case "mail":
-        return (
-          <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 18, height: 14 }}
-              source={require("../../assets/images/SDH/mailIcon.png")}
-            />
-          </View>
-        );
-      case "password":
-        return (
-          <View style={styles.inputTitle}>
-            <Image
-              style={{ width: 15.5, height: 18, marginLeft: 1 }}
-              source={require("../../assets/images/SDH/password.png")}
-            />
-          </View>
-        );
-      default:
-    }
+    return (
+      <View style={styles.inputTitle}>
+        <Image
+          style={icons[type].style}
+          source={icons[type].src}
+        />
+      </View>
+    );
   };
   useMemo(() => {
     BackHandler.addEventListener("hardwareBackPress", onBackPress);

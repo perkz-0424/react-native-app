@@ -1,5 +1,14 @@
 import React, { useEffect, useState, memo, useMemo } from "react";
-import { View, Text, FlatList, StyleSheet, Image, RefreshControl, TouchableOpacity, PixelRatio } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  RefreshControl,
+  TouchableOpacity,
+  PixelRatio,
+} from "react-native";
 import { Radio, Tabs } from "@ant-design/react-native";
 import api, { abort } from "../../../../servers/Area/index";
 import errorMessage from "../../../../components/errorMessage";
@@ -162,7 +171,7 @@ const SelectTown = (props) => {
       <View style={{ flex: 1 }}>
         <Tabs
           tabBarPosition="top"
-          initialPage={0}
+          initialPage={netTypeIndex}
           tabs={tabs}
           renderTabBar={renderTabBar}
           tabBarBackgroundColor="#FFFFFF"
@@ -172,21 +181,20 @@ const SelectTown = (props) => {
           tabBarUnderlineStyle={{ width: 10, height: 2 }}
           prerenderingSiblingsNumber={1}
           page={netTypeIndex}
-          animated={true}
-        >
-          <View style={{ width: "100%", flex: 1 }}>
-            <View style={styles.title}>
-              <Text style={styles.fontStyle}>县市区域</Text>
-              <Text style={styles.fontStyle}>告警数量</Text>
-            </View>
-            <FlatList
-              data={getTowns()}
-              keyExtractor={(item) => `town${item.AID}`}
-              renderItem={renderTownRow}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getTownsInfo}/>}
-              initialNumToRender={15}
-            />
+          animated={false}
+        ><View style={{ width: "100%", flex: 1 }}>
+          <View style={styles.title}>
+            <Text style={styles.fontStyle}>县市区域</Text>
+            <Text style={styles.fontStyle}>告警数量</Text>
           </View>
+          <FlatList
+            data={getTowns()}
+            keyExtractor={(item) => `town${item.AID}`}
+            renderItem={renderTownRow}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getTownsInfo}/>}
+            initialNumToRender={15}
+          />
+        </View>
         </Tabs>
       </View>
     </View>

@@ -64,7 +64,7 @@ const LoginPage = props => {
       } else {
         startTiming();//成功发送，开始倒计时
       }
-    }).catch(() => {failSend("发送失败");});
+    }).catch(() => failSend("发送失败"));
   };
   /*登录接口调用*/
   const getOnLogin = () => {
